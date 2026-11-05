@@ -1,0 +1,26 @@
+node_modules/
+dist/
+dist-ssr/
+coverage/
+.git/
+.husky/_/
+.claude/skills/
+*.tsbuildinfo
+package-lock.json
+
+# Planning documents are outside this tooling task's formatting scope.
+AGENTS.md
+CLAUDE.md
+VISION.md
+MIGRATION_PLAN.md
+
+# Protected Day 3 baseline: never automatically format these files.
+src/logic.ts
+src/state.ts
+src/modules/cart/cart.logic.ts
+src/modules/cart/cart.types.ts
+src/modules/products/products.api.ts
+src/modules/products/products.logic.ts
+src/modules/products/products.types.ts
+src/modules/state/state.types.ts
+src/shared/api/client.ts

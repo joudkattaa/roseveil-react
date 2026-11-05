@@ -1,0 +1,288 @@
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --theme-bg: #21070d;
+  --theme-surface: #4b101f;
+  --theme-accent: #e5b4aa;
+  --theme-text: #f9eae5;
+  --theme-muted: #d7b5b2;
+  --theme-border: #ad7280;
+  --theme-hover: #f5c8bd;
+  --rose: var(--theme-accent);
+  --rose-dark: var(--theme-hover);
+  --pink: var(--theme-surface);
+  --ink: var(--theme-text);
+  --muted: var(--theme-muted);
+  --line: var(--theme-border);
+  background: var(--theme-bg);
+  color: var(--theme-text);
+}
+:root[data-theme='dark'] body {
+  background: var(--theme-bg);
+  color: var(--theme-text);
+}
+:root[data-theme='dark'] :is(.benefits, .signature-ribbon) {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] .hero.hero-editorial {
+  --hero-surface: var(--theme-bg);
+  background: var(--hero-surface);
+}
+:root[data-theme='dark']
+  :is(.hero h1, .signature-ribbon, .signature-ribbon span) {
+  color: var(--theme-text);
+}
+:root[data-theme='dark'] :is(.hero-copy > p, .hero-badges, .hero-badges svg) {
+  color: var(--theme-accent);
+}
+:root[data-theme='dark'] .button {
+  background: var(--theme-accent);
+  border-color: var(--theme-accent);
+  color: var(--theme-bg);
+}
+:root[data-theme='dark'] .benefits article {
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] .skip-link:focus {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+}
+/* Header-only theme additions; existing hero styling remains unchanged. */
+:root[data-theme='dark'] .site-header {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] :is(.logo, .brand-flower, .main-nav .active) {
+  color: var(--theme-accent);
+}
+:root[data-theme='dark'] :is(.announcement, .announcement button) {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+}
+:root[data-theme='dark'] .cart-button > span {
+  background: var(--theme-accent);
+  color: var(--theme-bg);
+}
+:root[data-theme='dark'] .toast {
+  background: var(--theme-accent);
+  color: var(--theme-bg);
+}
+/* Original About dark-theme overrides. */
+:root[data-theme='dark'] .about {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] .about .eyebrow {
+  color: var(--theme-accent);
+}
+:root[data-theme='dark'] :is(.about-copy > p:not(.eyebrow), .about-values p) {
+  color: var(--theme-text);
+}
+:root[data-theme='dark'] :is(.about-values article > svg, .about-story) {
+  border-color: var(--theme-border);
+}
+/* Original Categories dark-theme overrides. */
+:root[data-theme='dark'] .categories {
+  background: var(--theme-bg);
+}
+:root[data-theme='dark'] :is(.categories .eyebrow, .category-card > span) {
+  color: var(--theme-accent);
+}
+:root[data-theme='dark'] .category-card img {
+  background: var(--theme-bg);
+  border-color: var(--theme-border);
+  outline-color: oklch(1 0 0 / 0.1);
+}
+.theme-toggle .theme-sun {
+  display: none;
+}
+:root[data-theme='dark'] .theme-toggle .theme-moon {
+  display: none;
+}
+:root[data-theme='dark'] .theme-toggle .theme-sun {
+  display: block;
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-theme='dark'] :is(.icon-button:hover, .main-nav > a:hover) {
+    color: var(--theme-hover);
+  }
+}
+
+:root[data-theme='dark'] .promise {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+
+/* Original footer dark-theme overrides, scoped to the migrated footer. */
+:root[data-theme='dark'] .site-footer {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark']
+  :is(
+    .site-footer .logo,
+    .site-footer .brand-flower,
+    .footer-grid h2,
+    .footer-brand .footer-social,
+    .newsletter #newsletter-status
+  ) {
+  color: var(--theme-accent);
+}
+:root[data-theme='dark']
+  :is(
+    .footer-brand p,
+    .newsletter > p,
+    .footer-connect .demo-note,
+    .footer-bottom
+  ) {
+  color: var(--theme-text);
+}
+:root[data-theme='dark'] .site-footer input {
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] .site-footer input::placeholder {
+  color: var(--theme-muted);
+}
+:root[data-theme='dark'] .site-footer .newsletter .button {
+  background: var(--theme-accent);
+  border-color: var(--theme-accent);
+  color: var(--theme-bg);
+}
+:root[data-theme='dark']
+  :is(.footer-brand, .footer-brand .logo, .footer-bottom) {
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] .site-footer :focus-visible {
+  outline-color: var(--theme-accent);
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-theme='dark'] .site-footer .newsletter .button:hover {
+    background: var(--theme-hover);
+    border-color: var(--theme-hover);
+    color: var(--theme-bg);
+  }
+  :root[data-theme='dark']
+    :is(
+      .footer-grid > div > a:not(.logo):hover,
+      .footer-grid > div > button:hover
+    ) {
+    color: var(--theme-hover);
+  }
+}
+
+/* Original product collection dark-theme overrides. */
+:root[data-theme='dark'] .products {
+  background: var(--theme-bg);
+}
+:root[data-theme='dark']
+  :is(
+    .product-card,
+    .product-card:nth-child(even),
+    .product-card:nth-child(3n)
+  ) {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] .product-category {
+  color: var(--theme-accent);
+}
+:root[data-theme='dark'] .product-image-button {
+  background: var(--theme-bg);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] .product-image-button img {
+  outline-color: oklch(1 0 0 / 0.1);
+}
+:root[data-theme='dark'] .product-card .add-button {
+  background: var(--theme-bg);
+  border-color: var(--theme-border);
+  color: var(--theme-accent);
+}
+
+/* Original discovery dark-theme overrides. */
+:root[data-theme='dark'] .catalog-popup {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+  box-shadow: 0 18px 60px #10030780;
+}
+:root[data-theme='dark'] .catalog-popup label {
+  color: var(--theme-accent);
+}
+:root[data-theme='dark']
+  :is(.search-panel input, .catalog-popup input, .catalog-popup select) {
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark']
+  :is(.search-panel input, .catalog-popup input)::placeholder {
+  color: var(--theme-muted);
+}
+:root[data-theme='dark'] :is(.catalog-tool summary, .collection-links a) {
+  background: var(--theme-bg);
+  border-color: var(--theme-border);
+  color: var(--theme-accent);
+}
+:root[data-theme='dark']
+  :is(.catalog-tool[open] summary, .collection-links a[aria-current='true']) {
+  background: var(--theme-accent);
+  border-color: var(--theme-accent);
+  color: var(--theme-bg);
+}
+:root[data-theme='dark'] .empty-state {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark']
+  :is(
+    .search-panel input,
+    .catalog-popup input,
+    .catalog-popup select,
+    .catalog-tool summary
+  ):focus-visible {
+  outline-color: var(--theme-accent);
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-theme='dark']
+    :is(.catalog-tool summary:hover, .collection-links a:hover) {
+    background: var(--theme-accent);
+    border-color: var(--theme-accent);
+    color: var(--theme-bg);
+  }
+}
+/* Original responsive overrides keep expanded tools in flow in both themes. */
+:root[data-theme='dark'] .catalog-tools .catalog-popup {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] :is(dialog, .shipping-note) {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] :is(.cart-line, .quantity, .cart-totals .grand-total) {
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] :is(.modal-product small, .cart-demo, .remove-line) {
+  color: var(--theme-text);
+}
+:root[data-theme='dark'] :is(.promo-form input, .button.secondary) {
+  background: var(--theme-bg);
+  border-color: var(--theme-border);
+  color: var(--theme-text);
+}
+:root[data-theme='dark'] dialog::backdrop {
+  background: #100307cc;
+}
