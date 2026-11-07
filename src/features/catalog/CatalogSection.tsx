@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { useRef } from 'react'
 import type { RefObject } from 'react'
 import type { CatalogFilters, CatalogPhase } from '../../types/ui.types.ts'
@@ -11,8 +12,8 @@ import CatalogStatus from './CatalogStatus.tsx'
 import ProductGrid from './ProductGrid.tsx'
 
 interface CatalogSectionProps {
+  onShopAll: () => void
   onAdd: (id: string) => void
-  onDetails: (id: string) => void
   products: readonly Readonly<Product>[]
   phase: CatalogPhase
   catalogEmpty: boolean
@@ -33,8 +34,8 @@ const collections: readonly (Category | 'All')[] = [
 ]
 
 export default function CatalogSection({
+  onShopAll,
   onAdd,
-  onDetails,
   products,
   phase,
   catalogEmpty,
@@ -85,26 +86,40 @@ export default function CatalogSection({
                 : 'The Roseveil Collection'}
           </h2>
         </div>
-        <button
-          id="view-all"
-          className="text-button"
-          type="button"
-          onClick={onToggleFeatured}
-        >
-          {!filters.featured && !filtered
-            ? 'VIEW FEATURED PRODUCTS'
-            : 'VIEW ALL PRODUCTS'}{' '}
-          <svg className="icon" aria-hidden="true">
-            <use href="#i-arrow" />
-          </svg>
-        </button>
+        {!filters.featured && !filtered ? (
+          <button
+            id="view-all"
+            className="text-button"
+            type="button"
+            onClick={onToggleFeatured}
+          >
+            {!filters.featured && !filtered
+              ? 'VIEW FEATURED PRODUCTS'
+              : 'VIEW ALL PRODUCTS'}{' '}
+            <svg className="icon" aria-hidden="true">
+              <use href="#i-arrow" />
+            </svg>
+          </button>
+        ) : (
+          <Link
+            id="view-all"
+            className="text-button"
+            to="/shop"
+            onClick={onShopAll}
+          >
+            VIEW ALL PRODUCTS{' '}
+            <svg className="icon" aria-hidden="true">
+              <use href="#i-arrow" />
+            </svg>
+          </Link>
+        )}
       </div>
       <div className="collection-toolbar">
         <nav className="collection-links" aria-label="Beauty collections">
           {collections.map((category) => (
-            <a
+            <button
+              type="button"
               key={category}
-              href="#products"
               aria-current={
                 !filters.featured && filters.category === category
                   ? 'true'
@@ -113,7 +128,7 @@ export default function CatalogSection({
               onClick={() => onCategoryChange(category)}
             >
               {category === 'All' ? 'All Beauty' : category}
-            </a>
+            </button>
           ))}
         </nav>
         <CatalogControls filters={filters} onChange={onFiltersChange} />
@@ -149,7 +164,7 @@ export default function CatalogSection({
         onReset={onReset}
       />
       <div aria-busy={phase === 'idle' || phase === 'loading'}>
-        <ProductGrid products={matches} onAdd={onAdd} onDetails={onDetails} />
+        <ProductGrid products={matches} onAdd={onAdd} />
       </div>
     </section>
   )

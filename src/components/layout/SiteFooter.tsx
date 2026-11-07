@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import NewsletterForm from '../forms/NewsletterForm.tsx'
 
 interface SiteFooterProps {
@@ -29,14 +30,14 @@ export default function SiteFooter({
       </p>
       <div className="footer-grid container">
         <div className="footer-brand">
-          <a className="logo" href="#top" onClick={onHome}>
+          <Link className="logo" to="/" onClick={onHome}>
             <svg className="brand-flower" aria-hidden="true">
               <use href="#i-flower" />
             </svg>
             <span>
               ROSEVEIL<small>COSMETICS</small>
             </span>
-          </a>
+          </Link>
           <p>
             Your everyday moment of beauty.
             <br />
@@ -48,13 +49,14 @@ export default function SiteFooter({
         </div>
         <div>
           <h2>EXPLORE ROSEVEIL</h2>
-          <a href="#top" onClick={onHome}>
+          <Link to="/" onClick={onHome}>
             Home
-          </a>
-          <a href="#products" onClick={onShop}>
+          </Link>
+          <Link to="/shop" onClick={onShop}>
             Shop
-          </a>
-          <a href="#about">About Us</a>
+          </Link>
+          <Link to="/about">About Us</Link>
+          <Link to="/bag">Shopping Bag</Link>
           <button type="button" disabled aria-describedby="footer-unavailable">
             Beauty Journal
           </button>

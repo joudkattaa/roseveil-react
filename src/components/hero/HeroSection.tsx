@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import HeroArtwork from './HeroArtwork.tsx'
 
 interface HeroSectionProps {
@@ -20,9 +21,9 @@ export default function HeroSection({ onExplore }: HeroSectionProps) {
               A little rose. A little ritual. Discover beauty essentials that
               make the everyday feel extraordinary.
             </p>
-            <a className="button" href="#products" onClick={onExplore}>
+            <Link className="button" to="/shop" onClick={onExplore}>
               SHOP NOW
-            </a>
+            </Link>
             <div className="hero-badges">
               <div>
                 <svg aria-hidden="true">

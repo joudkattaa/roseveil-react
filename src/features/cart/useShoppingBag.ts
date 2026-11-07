@@ -10,7 +10,6 @@ import { checkoutOrder, type DemoOrder } from '../checkout/checkout.logic.ts'
 export type ActiveDialog =
   | null
   | { kind: 'bag'; focusOnMount?: boolean }
-  | { kind: 'product'; id: string }
   | { kind: 'checkout' }
   | { kind: 'confirmation'; order: DemoOrder }
 
@@ -22,10 +21,6 @@ export function useShoppingBag(
 ) {
   const [bagFeedback, setBagFeedback] = useState(0)
   const [activeDialog, setActiveDialog] = useState<ActiveDialog>(null)
-  const selectedProduct =
-    activeDialog?.kind === 'product'
-      ? productById(activeDialog.id, snapshot.catalog)
-      : undefined
   const bagCount = snapshot.cart.reduce((sum, item) => sum + item.quantity, 0)
   function addProduct(id: string) {
     const product = productById(id, snapshot.catalog)
@@ -94,7 +89,6 @@ export function useShoppingBag(
     clearBag,
     activeDialog,
     setActiveDialog,
-    selectedProduct,
     bagCount,
     addProduct,
     continueShopping,

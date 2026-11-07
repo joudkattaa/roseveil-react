@@ -1,5 +1,6 @@
+import { renderStorefront } from './renderStorefront.tsx'
 import { StrictMode } from 'react'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, it, vi } from 'vitest'
 import App from '../src/App.tsx'
@@ -33,7 +34,7 @@ it.each([
   async ({ saved, systemDark, expected }) => {
     systemPreference(systemDark)
     if (saved !== null) localStorage.setItem('roseveil-theme', saved)
-    const view = render(
+    const view = renderStorefront(
       <StrictMode>
         <App />
       </StrictMode>,
@@ -43,7 +44,7 @@ it.each([
       'aria-pressed',
       String(expected === 'dark'),
     )
-    await screen.findByRole('button', { name: 'View Velvet Body Cream' })
+    await screen.findByRole('link', { name: 'View Velvet Body Cream' })
     // Reading the system default never creates a saved user choice.
     expect(localStorage.getItem('roseveil-theme')).toBe(saved)
     systemPreference(!systemDark)
@@ -59,7 +60,7 @@ it.each([
 it('switches with Enter and Space, saves the choice and restores it on remount', async () => {
   systemPreference(false)
   const user = userEvent.setup()
-  const view = render(<App />)
+  const view = renderStorefront(<App />)
   const toggle = screen.getByRole('button', { name: 'Dark mode' })
   toggle.focus()
   await user.keyboard('{Enter}')
@@ -71,12 +72,12 @@ it('switches with Enter and Space, saves the choice and restores it on remount',
   expect(localStorage.getItem('roseveil-theme')).toBe('light')
   await user.click(toggle)
   view.unmount()
-  render(<App />)
+  renderStorefront(<App />)
   expect(screen.getByRole('button', { name: 'Dark mode' })).toHaveAttribute(
     'aria-pressed',
     'true',
   )
-  await screen.findByRole('button', { name: 'View Velvet Body Cream' })
+  await screen.findByRole('link', { name: 'View Velvet Body Cream' })
 })
 
 it('still switches in memory when localStorage is blocked', async () => {
@@ -87,10 +88,10 @@ it('still switches in memory when localStorage is blocked', async () => {
   vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
     throw new Error('Blocked')
   })
-  render(<App />)
+  renderStorefront(<App />)
   fireEvent.click(screen.getByRole('button', { name: 'Dark mode' }))
   await waitFor(() =>
     expect(document.documentElement).toHaveAttribute('data-theme', 'light'),
   )
-  await screen.findByRole('button', { name: 'View Velvet Body Cream' })
+  await screen.findByRole('link', { name: 'View Velvet Body Cream' })
 })

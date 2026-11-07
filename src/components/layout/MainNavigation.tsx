@@ -1,3 +1,4 @@
+import { NavLink, useLocation } from 'react-router'
 import type { Category } from '../../modules/products/products.types.ts'
 import type { Ref } from 'react'
 import type {
@@ -24,6 +25,7 @@ export default function MainNavigation({
   onHome,
   navigationRef,
 }: MainNavigationProps) {
+  const { pathname } = useLocation()
   return (
     <nav
       ref={navigationRef}
@@ -32,12 +34,29 @@ export default function MainNavigation({
       aria-label="Main navigation"
     >
       {items.map((item) =>
-        item.available ? (
-          <a
+        item.available &&
+        item.category &&
+        item.category !== 'All' &&
+        pathname === '/' ? (
+          <button
             key={item.id}
-            href={item.href}
+            type="button"
             className={item.id === activeId ? 'active' : undefined}
-            aria-current={item.id === activeId ? 'page' : undefined}
+            aria-pressed={item.id === activeId}
+            onClick={() => {
+              if (item.category) onCategoryChange(item.category)
+              onNavigate()
+            }}
+          >
+            {item.label}
+          </button>
+        ) : item.available ? (
+          <NavLink
+            key={item.id}
+            to={item.href}
+            end
+            className={() => (item.id === activeId ? 'active' : undefined)}
+            aria-current={item.id === activeId ? 'page' : false}
             onClick={() => {
               if (item.id === 'home') onHome()
               else if (item.category) onCategoryChange(item.category)
@@ -45,7 +64,7 @@ export default function MainNavigation({
             }}
           >
             {item.label}
-          </a>
+          </NavLink>
         ) : (
           <button
             key={item.id}

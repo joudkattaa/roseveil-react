@@ -3,12 +3,12 @@ import type { Category } from '../../modules/products/products.types.ts'
 import type { CatalogFilters } from '../../types/ui.types.ts'
 import { navigationItems } from '../navigation/navigation.ts'
 
-export function useCatalogNavigation() {
+export function useCatalogNavigation(featured = true) {
   const [filters, setFilters] = useState<CatalogFilters>({
     category: 'All',
     query: '',
     sort: 'default',
-    featured: true,
+    featured,
   })
   const headingRef = useRef<HTMLHeadingElement>(null)
   const filtered =
@@ -45,7 +45,12 @@ export function useCatalogNavigation() {
     })
   }
   function searchSubmit() {
-    headingRef.current?.scrollIntoView({ behavior: 'auto' })
+    headingRef.current?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth',
+      block: 'start',
+    })
     headingRef.current?.focus({ preventScroll: true })
   }
   return {

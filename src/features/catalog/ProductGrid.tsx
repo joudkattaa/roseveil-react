@@ -4,23 +4,13 @@ import ProductCard from './ProductCard.tsx'
 interface ProductGridProps {
   products: readonly Readonly<Product>[]
   onAdd: (id: string) => void
-  onDetails: (id: string) => void
 }
 
-export default function ProductGrid({
-  products,
-  onAdd,
-  onDetails,
-}: ProductGridProps) {
+export default function ProductGrid({ products, onAdd }: ProductGridProps) {
   return (
     <div id="product-grid" className="product-grid">
       {products.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          onAdd={onAdd}
-          onDetails={onDetails}
-        />
+        <ProductCard key={product.id} product={product} onAdd={onAdd} />
       ))}
     </div>
   )

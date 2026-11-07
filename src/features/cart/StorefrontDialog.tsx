@@ -1,7 +1,5 @@
 import Dialog from '../../shared/ui/Dialog.tsx'
 import ShoppingBag from './ShoppingBag.tsx'
-import ProductDetails from '../catalog/ProductDetails.tsx'
-import type { Product } from '../../modules/products/products.types.ts'
 import type {
   StorefrontAdapter,
   StorefrontSnapshot,
@@ -18,7 +16,6 @@ interface StorefrontDialogProps {
   confirmCheckout: () => void
   activeDialog: ActiveDialog
   setActiveDialog: (value: ActiveDialog) => void
-  selectedProduct: Readonly<Product> | undefined
   snapshot: StorefrontSnapshot
   actions: StorefrontAdapter['actions']
   notification: { message: string; revision: number }
@@ -26,7 +23,6 @@ interface StorefrontDialogProps {
   removeProduct: (id: string) => void
   clearBag: () => void
   clearNotification: () => void
-  addProduct: (id: string) => void
   continueShopping: () => void
 }
 
@@ -36,7 +32,6 @@ export default function StorefrontDialog({
   confirmCheckout,
   activeDialog,
   setActiveDialog,
-  selectedProduct,
   snapshot,
   actions,
   notification,
@@ -44,7 +39,6 @@ export default function StorefrontDialog({
   removeProduct,
   clearBag,
   clearNotification,
-  addProduct,
   continueShopping,
 }: StorefrontDialogProps) {
   return (
@@ -58,7 +52,7 @@ export default function StorefrontDialog({
                 ? 'Demo Checkout'
                 : activeDialog.kind === 'confirmation'
                   ? 'Demo Confirmation'
-                  : (selectedProduct?.name ?? 'Product unavailable')
+                  : 'Demo Confirmation'
           }
           onClose={() => {
             setActiveDialog(null)
@@ -93,15 +87,7 @@ export default function StorefrontDialog({
               order={activeDialog.order}
               onContinue={continueShopping}
             />
-          ) : selectedProduct ? (
-            <ProductDetails
-              product={selectedProduct}
-              available={snapshot.phase === 'ready'}
-              onAdd={addProduct}
-            />
-          ) : (
-            <p>Product unavailable. Please close and reload the collection.</p>
-          )}
+          ) : null}
           <p role="status" aria-atomic="true">
             {notification.message ? (
               <span key={notification.revision}>{notification.message}</span>

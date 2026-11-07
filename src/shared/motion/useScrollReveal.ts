@@ -11,7 +11,7 @@ export function useScrollReveal() {
     )
       return
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const seen = new Set<Element>()
+    const seen = new WeakSet<Element>()
     const animations = new Set<Animation>()
     const observer = new IntersectionObserver(
       (entries) => {
@@ -45,20 +45,37 @@ export function useScrollReveal() {
       },
       { threshold: 0.08 },
     )
-    function update() {
-      observer.disconnect()
-      animations.forEach((animation) => animation.cancel())
-      animations.clear()
+    const watching = new Set<Element>()
+    function scan() {
+      for (const target of watching) {
+        if (!element?.contains(target)) {
+          observer.unobserve(target)
+          watching.delete(target)
+        }
+      }
       if (preference.matches) return
       element
         ?.querySelectorAll('section:not(.hero), .signature-ribbon')
         .forEach((target) => {
-          if (!seen.has(target)) observer.observe(target)
+          if (!seen.has(target) && !watching.has(target)) {
+            watching.add(target)
+            observer.observe(target)
+          }
         })
+    }
+    const mutations = new MutationObserver(scan)
+    mutations.observe(element, { childList: true, subtree: true })
+    function update() {
+      observer.disconnect()
+      watching.clear()
+      animations.forEach((animation) => animation.cancel())
+      animations.clear()
+      scan()
     }
     update()
     preference.addEventListener('change', update)
     return () => {
+      mutations.disconnect()
       observer.disconnect()
       animations.forEach((animation) => animation.cancel())
       preference.removeEventListener('change', update)

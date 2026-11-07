@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { renderStorefront } from './renderStorefront.tsx'
+import { fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, it, vi } from 'vitest'
 import App from '../src/App.tsx'
@@ -14,7 +15,7 @@ function catalog() {
 it('restores bag and promo after remount, clears them and restores focus when closed', async () => {
   catalog()
   const user = userEvent.setup()
-  const view = render(<App />)
+  const view = renderStorefront(<App />)
   await user.click(
     await screen.findByRole('button', { name: 'Add Velvet Body Cream to bag' }),
   )
@@ -48,7 +49,7 @@ it('restores bag and promo after remount, clears them and restores focus when cl
   ).toBeInTheDocument()
   expect(dialog.getByText('$50.73')).toBeInTheDocument()
   view.unmount()
-  render(<App />)
+  renderStorefront(<App />)
   await screen.findByRole('button', { name: 'Add Velvet Body Cream to bag' })
   const opener = screen.getByRole('button', {
     name: 'Open shopping bag, 2 items',
@@ -90,7 +91,7 @@ it('enforces 99, keeps decrease available and focuses the bag when the last row 
     }),
   )
   const user = userEvent.setup()
-  render(<App />)
+  renderStorefront(<App />)
   await screen.findByRole('button', { name: 'Add Velvet Body Cream to bag' })
   await user.click(
     screen.getByRole('button', { name: 'Open shopping bag, 98 items' }),
@@ -138,7 +139,7 @@ it('decreases the last item to zero without leaving focus on a removed button', 
     }),
   )
   const user = userEvent.setup()
-  render(<App />)
+  renderStorefront(<App />)
   await screen.findByRole('button', { name: 'Add Velvet Body Cream to bag' })
   await user.click(
     screen.getByRole('button', { name: 'Open shopping bag, 1 items' }),

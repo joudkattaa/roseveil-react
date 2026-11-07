@@ -2464,7 +2464,7 @@
   gap: 10px;
   margin-bottom: 20px;
 }
-.collection-links a {
+.collection-links :is(a, button) {
   padding: 8px 18px;
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -2472,16 +2472,16 @@
   font-size: 12px;
 }
 @media (hover: hover) and (pointer: fine) {
-  .collection-links a:hover {
+  .collection-links :is(a, button):hover {
     background: var(--pink);
   }
 }
-.collection-links a {
+.collection-links :is(a, button) {
   border-radius: 24px;
   font-size: 10px;
   padding: 8px 14px;
 }
-.collection-links a[aria-current='true'] {
+.collection-links :is(a, button)[aria-current='true'] {
   background: var(--rose-dark);
   border-color: var(--rose-dark);
   color: #fff;
@@ -2570,7 +2570,7 @@
   font-size: 11px;
   color: var(--muted);
 }
-.collection-links a:active,
+.collection-links :is(a, button):active,
 .text-button:active {
   opacity: 0.8;
 }
@@ -2595,7 +2595,7 @@
 .collection-links {
   gap: 8px;
 }
-.collection-links a {
+.collection-links :is(a, button) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3450,4 +3450,35 @@ dialog {
   .hero-layered-scene[data-entrance='ready'] .hero-product-layer {
     transform: translate3d(48px, 0, 0);
   }
+}
+
+/* Routed pages reuse the original brand typography and existing feature styles. */
+.route-page {
+  padding-block: 32px 48px;
+}
+.route-page > h1 {
+  font: 500 clamp(32px, 4vw, 46px)/1.2 var(--serif);
+  margin-bottom: 24px;
+}
+.route-loading {
+  padding-block: 32px;
+  min-height: 160px;
+}
+
+.category-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+.category-card[aria-pressed='true'] img {
+  outline: 2px solid var(--rose-dark);
+  outline-offset: 3px;
+}
+.collection-links button {
+  background: transparent;
+  cursor: pointer;
 }

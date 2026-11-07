@@ -1,3 +1,4 @@
+import { abortableFetch } from '../../shared/api/abortableFetch.ts'
 import { createState } from '../../state.ts'
 import type { Product } from '../../modules/products/products.types.ts'
 import type { CartItem } from '../../modules/cart/cart.types.ts'
@@ -30,6 +31,8 @@ interface StorefrontActions {
 }
 
 export interface StorefrontAdapter {
+  retainCatalog: () => () => void
+  cancelCatalog: () => void
   readonly actions: Readonly<StorefrontActions>
   getSnapshot: () => StorefrontSnapshot
   subscribe: (listener: () => void) => () => void
@@ -48,6 +51,11 @@ export function createStorefrontAdapter(
   const fetcher = options.fetcher ?? globalThis.fetch
   const query = options.query ?? ''
   const listeners = new Set<() => void>()
+  let inFlight: Promise<void> | null = null
+  let controller: AbortController | null = null
+  let cancelled = false
+  let owners = 0
+  let releaseTimer: ReturnType<typeof setTimeout> | undefined
   let detach: (() => void) | undefined
 
   function readSnapshot(): StorefrontSnapshot {
@@ -57,10 +65,15 @@ export function createStorefrontAdapter(
       catalog: Object.freeze(
         state.catalogProducts.map((product) => Object.freeze({ ...product })),
       ),
-      phase: state.catalogProductsStatus,
-      error: error
-        ? Object.freeze({ message: error.message, status: error.status })
-        : null,
+      phase: cancelled
+        ? 'idle'
+        : inFlight
+          ? 'loading'
+          : state.catalogProductsStatus,
+      error:
+        !cancelled && !inFlight && error
+          ? Object.freeze({ message: error.message, status: error.status })
+          : null,
       cart: Object.freeze(state.cart.map((item) => Object.freeze({ ...item }))),
       promoCode: state.promoCode,
       theme: state.theme,
@@ -78,14 +91,39 @@ export function createStorefrontAdapter(
   }
 
   const actions: Readonly<StorefrontActions> = Object.freeze({
-    async loadCatalog() {
-      const pending = state.loadCatalogProducts(fetcher, query)
+    loadCatalog() {
+      if (inFlight) {
+        // The protected store must leave loading before an aborted load retries.
+        return controller?.signal.aborted
+          ? inFlight.then(() => actions.loadCatalog())
+          : inFlight
+      }
+      const requestController = new AbortController()
+      controller = requestController
+      cancelled = false
+      const request = Promise.resolve()
+        .then(() => {
+          if (requestController.signal.aborted) return
+          return state.loadCatalogProducts(
+            abortableFetch(fetcher, requestController.signal),
+            query,
+          )
+        })
+        .finally(() => {
+          if (controller === requestController) {
+            controller = null
+            inFlight = null
+            publish()
+          }
+        })
+      inFlight = request
       publish()
-      await pending
-      publish()
+      return request
     },
     addProduct(id: string) {
       if (
+        cancelled ||
+        inFlight !== null ||
         state.catalogProductsStatus !== 'ready' ||
         !state.catalogProducts.length
       )
@@ -120,7 +158,32 @@ export function createStorefrontAdapter(
     },
   })
 
+  function cancelCatalog() {
+    if (!controller || controller.signal.aborted) return
+    cancelled = true
+    controller.abort()
+    publish()
+  }
   return {
+    retainCatalog() {
+      if (releaseTimer !== undefined) clearTimeout(releaseTimer)
+      releaseTimer = undefined
+      owners++
+      let released = false
+      return () => {
+        if (released) return
+        released = true
+        owners--
+        if (owners === 0) {
+          // StrictMode reacquires the same owner before this task runs.
+          releaseTimer = setTimeout(() => {
+            releaseTimer = undefined
+            if (owners === 0) cancelCatalog()
+          }, 0)
+        }
+      }
+    },
+    cancelCatalog,
     actions,
     getSnapshot: () => snapshot,
     subscribe(listener) {

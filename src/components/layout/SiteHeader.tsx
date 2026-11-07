@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import type { Category } from '../../modules/products/products.types.ts'
 import SearchField from '../../features/catalog/SearchField.tsx'
 import { useEffect, useRef, useState } from 'react'
@@ -11,6 +12,7 @@ import ThemeToggle from '../../features/theme/ThemeToggle.tsx'
 import type { Theme } from '../../modules/state/state.types.ts'
 
 interface SiteHeaderProps {
+  bagIsDialog?: boolean
   bagFeedback: number
   theme: Theme
   onToggleTheme: () => void
@@ -27,6 +29,7 @@ interface SiteHeaderProps {
 }
 
 export default function SiteHeader({
+  bagIsDialog = true,
   bagFeedback,
   theme,
   onToggleTheme,
@@ -122,10 +125,10 @@ export default function SiteHeader({
   return (
     <header className="site-header">
       <div className="header-inner container">
-        <a
+        <Link
           ref={homeRef}
           className="logo"
-          href="#top"
+          to="/"
           aria-label="Roseveil Cosmetics home"
           onClick={() => {
             onHome()
@@ -138,7 +141,7 @@ export default function SiteHeader({
           <span>
             ROSEVEIL<small>COSMETICS</small>
           </span>
-        </a>
+        </Link>
         <button
           ref={toggleRef}
           id="menu-toggle"
@@ -195,7 +198,7 @@ export default function SiteHeader({
             className="icon-button cart-button"
             type="button"
             onClick={onOpenBag}
-            aria-haspopup="dialog"
+            aria-haspopup={bagIsDialog ? 'dialog' : undefined}
             aria-label={`Open shopping bag, ${bagCount} items`}
           >
             <svg

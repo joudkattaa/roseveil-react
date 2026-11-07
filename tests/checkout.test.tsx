@@ -1,8 +1,8 @@
+import { renderStorefront } from './renderStorefront.tsx'
 import { StrictMode } from 'react'
 import {
   act,
   fireEvent,
-  render,
   renderHook,
   screen,
   within,
@@ -40,7 +40,7 @@ async function openCheckout(user: ReturnType<typeof userEvent.setup>) {
 it('does not offer checkout for an empty bag', async () => {
   setupCatalog()
   const user = userEvent.setup()
-  render(<App />)
+  renderStorefront(<App />)
   await user.click(
     screen.getByRole('button', { name: 'Open shopping bag, 0 items' }),
   )
@@ -56,7 +56,7 @@ it('uses native validation, confirms only valid input, clears the cart and never
   const fetcher = setupCatalog()
   savedBag()
   const user = userEvent.setup()
-  render(
+  renderStorefront(
     <StrictMode>
       <App />
     </StrictMode>,
@@ -127,7 +127,7 @@ it('goes back to edit the bag, discards entered details and preserves the bag wh
   setupCatalog()
   savedBag()
   const user = userEvent.setup()
-  render(<App />)
+  renderStorefront(<App />)
   let checkout = await openCheckout(user)
   await user.type(checkout.getByLabelText('Full name'), 'Temporary Name')
   await user.click(
@@ -167,7 +167,7 @@ it('blocks checkout while saved bag prices are unavailable', async () => {
   )
   savedBag()
   const user = userEvent.setup()
-  render(<App />)
+  renderStorefront(<App />)
   await screen.findByRole('button', { name: 'Try Again' })
   await user.click(
     screen.getByRole('button', { name: 'Open shopping bag, 2 items' }),

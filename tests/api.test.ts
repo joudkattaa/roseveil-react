@@ -1,3 +1,5 @@
+import { getProductById } from '../src/features/catalog/api/productDetails.api.ts'
+import productEndpoint from '../api/products/[id].ts'
 // @vitest-environment node
 import { createServer } from 'node:http'
 import { afterAll, beforeAll, expect, it } from 'vitest'
@@ -76,4 +78,37 @@ it('rejects invalid JSON, duplicate IDs, invalid prices and network failure', as
       throw Error('offline')
     }),
   ).rejects.toThrow('reach the server')
+})
+
+it('serves single products by ID in development and the serverless handler', async () => {
+  const response = await fetch(base + '/api/products/serum')
+  expect(response.status).toBe(200)
+  expect(response.headers.get('cache-control')).toBe('no-store')
+  const item = products.find((p) => p.id === 'serum')
+  expect(await response.json()).toEqual(item)
+  expect(
+    await getProductById('serum', {
+      fetcher: (url, options) => fetch(base + url, options),
+    }),
+  ).toEqual(item)
+  expect((await fetch(base + '/api/products/missing-product')).status).toBe(404)
+  expect((await fetch(base + '/api/products/%25bad')).status).toBe(400)
+  expect(
+    (await fetch(base + '/api/products/serum', { method: 'POST' })).status,
+  ).toBe(405)
+  expect(
+    await productEndpoint
+      .fetch(new Request('http://local/api/products/serum'))
+      .json(),
+  ).toEqual(item)
+  expect(
+    productEndpoint.fetch(
+      new Request('http://local/api/products/missing-product'),
+    ).status,
+  ).toBe(404)
+  expect(
+    productEndpoint.fetch(
+      new Request('http://local/api/products/serum', { method: 'DELETE' }),
+    ).status,
+  ).toBe(405)
 })

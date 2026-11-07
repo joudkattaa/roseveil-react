@@ -53,10 +53,10 @@ export default function CategorySection({
       </p>
       <div className="category-grid">
         {categories.map((category) => (
-          <a
-            href="#products"
+          <button
+            type="button"
             onClick={() => onSelect(category.id)}
-            aria-current={activeCategory === category.id ? 'true' : undefined}
+            aria-pressed={activeCategory === category.id}
             key={category.id}
             className="category-card"
             data-category={category.id}
@@ -78,7 +78,7 @@ export default function CategorySection({
                 <use href="#i-arrow" />
               </svg>
             </span>
-          </a>
+          </button>
         ))}
       </div>
     </section>

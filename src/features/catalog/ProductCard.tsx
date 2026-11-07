@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import type { Product } from '../../modules/products/products.types.ts'
 import { formatMoney } from '../../logic.ts'
 import ProductImage from './ProductImage.tsx'
@@ -7,37 +8,27 @@ import { secondaryImages } from './secondaryImages.ts'
 interface ProductCardProps {
   product: Readonly<Product>
   onAdd: (id: string) => void
-  onDetails: (id: string) => void
 }
 
-export default function ProductCard({
-  product,
-  onAdd,
-  onDetails,
-}: ProductCardProps) {
+export default function ProductCard({ product, onAdd }: ProductCardProps) {
   return (
     <article className="product-card" aria-label={product.name}>
-      <button
-        type="button"
+      <Link
+        to={'/products/' + product.id}
         className="product-image-button"
         aria-label={`View ${product.name}`}
-        onClick={() => onDetails(product.id)}
       >
         <ProductImage
           product={product}
           secondaryImage={secondaryImages[product.id]}
         />
-      </button>
+      </Link>
       <div className="product-info">
         <p className="product-category">{product.category}</p>
         <h3>
-          <button
-            className="product-name"
-            type="button"
-            onClick={() => onDetails(product.id)}
-          >
+          <Link className="product-name" to={'/products/' + product.id}>
             {product.name}
-          </button>
+          </Link>
         </h3>
         <p className="product-price">{formatMoney(product.price)}</p>
       </div>

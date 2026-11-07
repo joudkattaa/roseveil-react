@@ -1,5 +1,6 @@
 import type { Connect } from 'vite'
 import { products } from './catalog.ts'
+import { productByIdResponse } from './product-by-id.ts'
 
 // Both Vite servers use the same source catalog; no generated catalog is maintained.
 export function productsMiddleware(
@@ -7,6 +8,16 @@ export function productsMiddleware(
 ): Connect.NextHandleFunction {
   return async (request, response, next) => {
     const url = new URL(request.url ?? '/', 'http://localhost')
+    if (url.pathname.startsWith('/api/products/')) {
+      const result = productByIdResponse({
+        url: url.href,
+        method: request.method ?? 'GET',
+      })
+      response.statusCode = result.status
+      result.headers.forEach((value, name) => response.setHeader(name, value))
+      response.end(await result.text())
+      return
+    }
     if (url.pathname !== '/api/products') return next()
     response.setHeader('Content-Type', 'application/json; charset=utf-8')
     response.setHeader('Cache-Control', 'no-store')

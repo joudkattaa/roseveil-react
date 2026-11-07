@@ -227,13 +227,17 @@
   :is(.search-panel input, .catalog-popup input)::placeholder {
   color: var(--theme-muted);
 }
-:root[data-theme='dark'] :is(.catalog-tool summary, .collection-links a) {
+:root[data-theme='dark']
+  :is(.catalog-tool summary, .collection-links :is(a, button)) {
   background: var(--theme-bg);
   border-color: var(--theme-border);
   color: var(--theme-accent);
 }
 :root[data-theme='dark']
-  :is(.catalog-tool[open] summary, .collection-links a[aria-current='true']) {
+  :is(
+    .catalog-tool[open] summary,
+    .collection-links :is(a, button)[aria-current='true']
+  ) {
   background: var(--theme-accent);
   border-color: var(--theme-accent);
   color: var(--theme-bg);
@@ -254,7 +258,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
   :root[data-theme='dark']
-    :is(.catalog-tool summary:hover, .collection-links a:hover) {
+    :is(.catalog-tool summary:hover, .collection-links :is(a, button):hover) {
     background: var(--theme-accent);
     border-color: var(--theme-accent);
     color: var(--theme-bg);

@@ -1,3 +1,4 @@
+import { renderStorefront } from './renderStorefront.tsx'
 import { StrictMode } from 'react'
 import {
   fireEvent,
@@ -63,31 +64,37 @@ it('does not dismiss a dialog during StrictMode effect cleanup; restores focus',
 })
 
 it('loads once in StrictMode, supports details/add/bag/promo/quantity/remove', async () => {
-  const fetcher = vi.fn(async () => Response.json({ items: products }))
+  const fetcher = vi.fn(async (url: RequestInfo | URL) =>
+    String(url).startsWith('/api/products/')
+      ? Response.json(
+          products.find(
+            (product) => product.id === String(url).split('/').at(-1),
+          ),
+        )
+      : Response.json({ items: products }),
+  )
   vi.stubGlobal('fetch', fetcher)
   const user = userEvent.setup()
-  render(
+  renderStorefront(
     <StrictMode>
       <App />
     </StrictMode>,
   )
   await user.click(
-    await screen.findByRole('button', { name: 'View Velvet Body Cream' }),
+    await screen.findByRole('link', { name: 'View Velvet Body Cream' }),
   )
   expect(
-    screen.getByRole('button', { name: 'Add Velvet Body Cream to bag' }),
+    await screen.findByRole('button', { name: 'ADD TO BAG' }),
   ).toBeEnabled()
-  expect(fetcher).toHaveBeenCalledTimes(1)
-  let dialog = screen.getByRole('dialog')
-  await user.click(within(dialog).getByRole('button', { name: 'ADD TO BAG' }))
-  expect(within(dialog).getByRole('status')).toHaveTextContent(
-    'added to your bag',
-  )
-  await user.click(within(dialog).getByRole('button', { name: 'Close dialog' }))
+  await waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2))
+  await user.click(await screen.findByRole('button', { name: 'ADD TO BAG' }))
+  expect(
+    screen.getByText('Velvet Body Cream added to your bag.'),
+  ).toBeInTheDocument()
   await user.click(
     screen.getByRole('button', { name: 'Open shopping bag, 1 items' }),
   )
-  dialog = screen.getByRole('dialog')
+  const dialog = screen.getByRole('dialog')
   await user.type(
     within(dialog).getByLabelText('Have a little treat? Enter your code.'),
     ' glow20 ',
@@ -130,11 +137,11 @@ it('synchronizes searches, resets filters, and recovers from API failure', async
     ),
   )
   const user = userEvent.setup()
-  render(<App />)
+  renderStorefront(<App />, { initialEntries: ['/shop'] })
   await screen.findByRole('button', { name: 'Try Again' })
   fail = false
   await user.click(screen.getByRole('button', { name: 'Try Again' }))
-  await screen.findByRole('button', { name: 'View Velvet Body Cream' })
+  await screen.findByRole('link', { name: 'View Velvet Body Cream' })
   await user.click(
     screen.getByLabelText('Search products', { selector: 'button' }),
   )
@@ -147,7 +154,7 @@ it('synchronizes searches, resets filters, and recovers from API failure', async
   ).toHaveValue('SERUM')
   await waitFor(() =>
     expect(
-      screen.queryByRole('button', { name: 'View Velvet Body Cream' }),
+      screen.queryByRole('link', { name: 'View Velvet Body Cream' }),
     ).not.toBeInTheDocument(),
   )
   await user.click(screen.getByRole('button', { name: /Clear filters/ }))
@@ -165,7 +172,7 @@ it('reports clipboard failure explicitly instead of implying copy success', asyn
     configurable: true,
     value: { writeText: vi.fn().mockRejectedValue(Error('denied')) },
   })
-  render(<App />)
+  renderStorefront(<App />)
   fireEvent.click(screen.getByRole('button', { name: /GLOW20/ }))
   await waitFor(() =>
     expect(screen.getByText(/Could not copy/)).toBeInTheDocument(),

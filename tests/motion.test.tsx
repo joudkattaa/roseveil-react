@@ -1,4 +1,12 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  within,
+  waitFor,
+} from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { StrictMode } from 'react'
 import ProductImage from '../src/features/catalog/ProductImage.tsx'
@@ -72,28 +80,36 @@ it('prepares a secondary crossfade only after load and falls back after failure'
   expect(document.querySelector('.product-secondary')).toBeNull()
 })
 
-it('keeps product grid details and add actions without floating metadata', () => {
+it('keeps product links and add actions without floating metadata', () => {
   const onAdd = vi.fn()
-  const onDetails = vi.fn()
   render(
-    <ProductGrid products={[product]} onAdd={onAdd} onDetails={onDetails} />,
+    <MemoryRouter>
+      <ProductGrid products={[product]} onAdd={onAdd} />
+    </MemoryRouter>,
   )
   expect(document.getElementById('product-grid')).not.toHaveAttribute(
     'data-featured',
   )
-  fireEvent.click(screen.getByRole('button', { name: 'View ' + product.name }))
-  expect(onDetails).toHaveBeenCalledWith(product.id)
+  expect(
+    screen.getByRole('link', { name: 'View ' + product.name }),
+  ).toHaveAttribute('href', '/products/' + product.id)
   fireEvent.click(
     screen.getByRole('button', { name: 'Add ' + product.name + ' to bag' }),
   )
   expect(onAdd).toHaveBeenCalledWith(product.id)
 })
 
-function MotionHarness() {
+interface MotionHarnessProps {
+  extra?: boolean
+}
+function MotionHarness({ extra = false }: MotionHarnessProps) {
   const root = useScrollReveal()
   return (
     <main ref={root}>
       <section aria-label="Story">Always visible</section>
+      {extra ? (
+        <section aria-label="Lazy section">New page content</section>
+      ) : null}
     </main>
   )
 }
@@ -165,6 +181,11 @@ it('reveals once, skips motion for reduced preference and cleans observers and a
   notify(entries, instance)
   notify(entries, instance)
   expect(animate).toHaveBeenCalledTimes(1)
+  view.rerender(<MotionHarness extra />)
+  const added = screen.getByRole('region', { name: 'Lazy section' })
+  await waitFor(() => expect(observe).toHaveBeenCalledWith(added))
+  view.rerender(<MotionHarness />)
+  await waitFor(() => expect(unobserve).toHaveBeenCalledWith(added))
   preference.matches = true
   preferenceChange?.()
   expect(cancel).toHaveBeenCalledTimes(1)
