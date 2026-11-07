@@ -3482,3 +3482,18 @@ dialog {
   background: transparent;
   cursor: pointer;
 }
+/* Official shadcn Field slots use existing ROSEVEIL spacing and colors. */
+.checkout-form [data-slot='field'] {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.checkout-form [data-slot='field-error'] {
+  color: var(--rose-dark);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.checkout-form [aria-invalid='true'] {
+  border-color: var(--rose-dark);
+}

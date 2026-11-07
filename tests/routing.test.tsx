@@ -42,7 +42,7 @@ it.each([
       name: title,
       level: 1,
     })
-    expect(document.title).toContain(title)
+    await waitFor(() => expect(document.title).toContain(title))
     expect(screen.getByRole('banner')).toBeInTheDocument()
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
     expect([heading, document.getElementById('main')]).toContain(

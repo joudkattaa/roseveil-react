@@ -1,18 +1,12 @@
 import { renderStorefront } from './renderStorefront.tsx'
 import { StrictMode } from 'react'
-import {
-  act,
-  fireEvent,
-  renderHook,
-  screen,
-  within,
-} from '@testing-library/react'
+import { act, fireEvent, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, it, vi } from 'vitest'
 import App from '../src/App.tsx'
 import { products } from '../server/catalog.ts'
-import { createStorefrontAdapter } from '../src/features/storefront/storefrontAdapter.ts'
-import { useShoppingBag } from '../src/features/cart/useShoppingBag.ts'
+import { useStorefront } from '../src/features/storefront/useStorefront.ts'
+import { useLocation } from 'react-router'
 
 function setupCatalog() {
   const fetcher = vi.fn(async () => Response.json({ items: products }))
@@ -34,7 +28,9 @@ async function openCheckout(user: ReturnType<typeof userEvent.setup>) {
     screen.getByRole('button', { name: 'Open shopping bag, 2 items' }),
   )
   await user.click(screen.getByRole('button', { name: 'DEMO CHECKOUT' }))
-  return within(screen.getByRole('dialog', { name: 'Demo Checkout' }))
+  await screen.findByRole('heading', { name: 'Demo Checkout', level: 1 })
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  return within(screen.getByRole('main'))
 }
 
 it('does not offer checkout for an empty bag', async () => {
@@ -52,7 +48,7 @@ it('does not offer checkout for an empty bag', async () => {
   ).not.toBeInTheDocument()
 })
 
-it('uses native validation, confirms only valid input, clears the cart and never sends customer details', async () => {
+it('uses schema validation, confirms only valid input, clears the cart and never sends customer details', async () => {
   const fetcher = setupCatalog()
   savedBag()
   const user = userEvent.setup()
@@ -63,10 +59,10 @@ it('uses native validation, confirms only valid input, clears the cart and never
   )
   const checkout = await openCheckout(user)
   expect(
-    checkout.getByRole('heading', { name: 'Customer information' }),
+    checkout.getByRole('heading', { name: 'Demo Checkout', level: 1 }),
   ).toHaveFocus()
   const form = checkout.getByRole('form', { name: 'Demo checkout' })
-  expect(form).toBeInvalid()
+  expect(form).toHaveAttribute('novalidate')
   await user.click(checkout.getByRole('button', { name: 'Confirm demo order' }))
   expect(screen.queryByText('Demo order confirmed')).not.toBeInTheDocument()
   expect(
@@ -79,12 +75,22 @@ it('uses native validation, confirms only valid input, clears the cart and never
     checkout.getByLabelText('Shipping address'),
     '123 Sample Street',
   )
-  expect(checkout.getByLabelText('Email')).toBeInvalid()
+  await waitFor(() =>
+    expect(checkout.getByLabelText('Email')).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    ),
+  )
   await user.click(checkout.getByRole('button', { name: 'Confirm demo order' }))
   expect(screen.queryByText('Demo order confirmed')).not.toBeInTheDocument()
   await user.clear(checkout.getByLabelText('Email'))
   await user.type(checkout.getByLabelText('Email'), 'demo@example.com')
-  expect(form).toBeValid()
+  await waitFor(() =>
+    expect(checkout.getByLabelText('Email')).toHaveAttribute(
+      'aria-invalid',
+      'false',
+    ),
+  )
   const summary = checkout.getByRole('region', { name: 'Order summary' })
   expect(summary).toHaveTextContent('Quantity: 2')
   expect(summary).toHaveTextContent('GLOW20 discount$11.20')
@@ -94,9 +100,8 @@ it('uses native validation, confirms only valid input, clears the cart and never
     'body-cream',
   )
   await user.click(checkout.getByRole('button', { name: 'Confirm demo order' }))
-  const confirmation = within(
-    screen.getByRole('dialog', { name: 'Demo Confirmation' }),
-  )
+  await screen.findByRole('heading', { name: 'Demo order confirmed' })
+  const confirmation = within(screen.getByRole('main'))
   expect(
     confirmation.getByRole('heading', { name: 'Demo order confirmed' }),
   ).toHaveFocus()
@@ -123,7 +128,7 @@ it('uses native validation, confirms only valid input, clears the cart and never
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 })
 
-it('goes back to edit the bag, discards entered details and preserves the bag when dismissed', async () => {
+it('goes back to the bag page, discards entered details and preserves the bag when leaving checkout', async () => {
   setupCatalog()
   savedBag()
   const user = userEvent.setup()
@@ -133,28 +138,25 @@ it('goes back to edit the bag, discards entered details and preserves the bag wh
   await user.click(
     checkout.getByRole('button', { name: 'Back to shopping bag' }),
   )
-  expect(
-    screen.getByRole('group', { name: 'Shopping bag contents' }),
-  ).toHaveFocus()
+  await screen.findByRole('heading', { name: 'Your Shopping Bag', level: 1 })
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   await user.click(
     screen.getByRole('button', {
       name: 'Increase quantity of Velvet Body Cream',
     }),
   )
   await user.click(screen.getByRole('button', { name: 'DEMO CHECKOUT' }))
-  checkout = within(screen.getByRole('dialog', { name: 'Demo Checkout' }))
+  await screen.findByRole('heading', { name: 'Demo Checkout', level: 1 })
+  checkout = within(screen.getByRole('main'))
   expect(checkout.getByLabelText('Full name')).toHaveValue('')
   expect(
     checkout.getByRole('region', { name: 'Order summary' }),
   ).toHaveTextContent('Quantity: 3')
-  fireEvent(
-    screen.getByRole('dialog'),
-    new Event('cancel', { cancelable: true }),
-  )
-  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  await user.click(screen.getByRole('link', { name: 'SHOP' }))
+  await screen.findByRole('heading', { name: 'Shop ROSEVEIL', level: 1 })
   expect(
     screen.getByRole('button', { name: 'Open shopping bag, 3 items' }),
-  ).toHaveFocus()
+  ).toBeInTheDocument()
   expect(localStorage.getItem('roseveil-shopping-bag-v1')).toContain(
     'body-cream',
   )
@@ -175,24 +177,91 @@ it('blocks checkout while saved bag prices are unavailable', async () => {
   expect(screen.getByRole('button', { name: 'DEMO CHECKOUT' })).toBeDisabled()
 })
 
-it('rechecks catalog readiness at confirmation and does not clear an invalid bag', async () => {
-  const store = createStorefrontAdapter({
-    fetcher: async () => Response.json({ items: products }),
-  })
-  await store.actions.loadCatalog()
-  store.actions.addProduct('body-cream')
-  const clearCart = vi.fn()
-  const actions = { ...store.actions, clearCart }
-  const ready = store.getSnapshot()
-  const { result, rerender } = renderHook(
-    ({ snapshot }) =>
-      useShoppingBag(snapshot, actions, vi.fn(), { current: null }),
-    { initialProps: { snapshot: ready } },
+interface StoreControlsProps {
+  onReload: boolean
+}
+function StoreControls({ onReload }: StoreControlsProps) {
+  const { actions } = useStorefront()
+  const { pathname } = useLocation()
+  return (
+    <>
+      <output aria-label="Checkout route">{pathname}</output>
+      <button
+        onClick={() => {
+          if (onReload) void actions.loadCatalog()
+          else actions.changeQuantity('body-cream', 1)
+        }}
+      >
+        Change shared cart
+      </button>
+    </>
   )
-  act(() => result.current.beginCheckout())
-  expect(result.current.activeDialog?.kind).toBe('checkout')
-  rerender({ snapshot: { ...ready, phase: 'error' } })
-  act(() => result.current.confirmCheckout())
-  expect(clearCart).not.toHaveBeenCalled()
-  expect(result.current.activeDialog?.kind).toBe('checkout')
+}
+async function fillCustomer(user: ReturnType<typeof userEvent.setup>) {
+  await user.type(screen.getByLabelText('Full name'), 'Demo Customer')
+  await user.type(screen.getByLabelText('Email'), 'demo@example.com')
+  await user.type(screen.getByLabelText('Phone number'), '1234567890')
+  await user.type(
+    screen.getByLabelText('Shipping address'),
+    '123 Sample Street',
+  )
+}
+it('rechecks current catalog readiness after schema validation and preserves an unavailable bag', async () => {
+  let failing = false
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () =>
+      failing
+        ? new Response('{}', { status: 500 })
+        : Response.json({ items: products }),
+    ),
+  )
+  savedBag()
+  const user = userEvent.setup()
+  renderStorefront(
+    <>
+      <App />
+      <StoreControls onReload />
+    </>,
+    { initialEntries: ['/shop'] },
+  )
+  await openCheckout(user)
+  expect(screen.getByLabelText('Checkout route')).toHaveTextContent('/checkout')
+  await fillCustomer(user)
+  failing = true
+  act(() => {
+    fireEvent.submit(screen.getByRole('form', { name: 'Demo checkout' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Change shared cart' }))
+  })
+  await screen.findByText(/Checkout is unavailable/)
+  expect(screen.queryByText('Demo order confirmed')).not.toBeInTheDocument()
+  expect(localStorage.getItem('roseveil-shopping-bag-v1')).toContain(
+    'body-cream',
+  )
+})
+it('uses the latest quantities when the cart changes during async schema validation', async () => {
+  setupCatalog()
+  savedBag()
+  const user = userEvent.setup()
+  renderStorefront(
+    <>
+      <App />
+      <StoreControls onReload={false} />
+    </>,
+    { initialEntries: ['/checkout'] },
+  )
+  await screen.findByLabelText('Full name')
+  await screen.findByText('Final total')
+  await fillCustomer(user)
+  act(() => {
+    fireEvent.submit(screen.getByRole('form', { name: 'Demo checkout' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Change shared cart' }))
+  })
+  await screen.findByRole('heading', { name: 'Demo order confirmed' })
+  expect(
+    screen.getByRole('region', { name: 'Order summary' }),
+  ).toHaveTextContent('Quantity: 3')
+  expect(
+    screen.getByRole('button', { name: 'Open shopping bag, 0 items' }),
+  ).toBeInTheDocument()
 })

@@ -320,3 +320,9 @@
   color: var(--theme-text);
   border-color: var(--theme-border);
 }
+:root[data-theme='dark'] .checkout-form [data-slot='field-error'] {
+  color: var(--theme-accent);
+}
+:root[data-theme='dark'] .checkout-form [aria-invalid='true'] {
+  border-color: var(--theme-accent);
+}

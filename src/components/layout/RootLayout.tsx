@@ -17,12 +17,13 @@ import {
 } from '../../features/navigation/navigation.ts'
 
 import { useHomeCatalog } from '../../features/catalog/homeCatalog.context.ts'
+import { checkoutOrder } from '../../features/checkout/checkout.logic.ts'
 import { useTheme } from '../../features/theme/useTheme.ts'
 
 export default function RootLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const { snapshot, actions } = useStorefront()
+  const { snapshot, actions, getSnapshot } = useStorefront()
   const { toggleTheme } = useTheme(snapshot.theme, actions.setTheme)
   const { notification, notify, copyCode, clearNotification } =
     useNotification()
@@ -115,6 +116,12 @@ export default function RootLayout() {
       </SiteLayout>
       <StorefrontDialog
         {...bag}
+        onCheckout={() => {
+          if (!checkoutOrder(getSnapshot())) return
+          setActiveDialog(null)
+          clearNotification()
+          navigate('/checkout')
+        }}
         snapshot={snapshot}
         actions={actions}
         notification={notification}

@@ -9,11 +9,11 @@ import {
 } from '../features/checkout/checkout.logic.ts'
 import { useStorefront } from '../features/storefront/useStorefront.ts'
 export default function CheckoutPage() {
-  const { snapshot, actions } = useStorefront()
+  const { snapshot, actions, getSnapshot } = useStorefront()
   const navigate = useNavigate()
   const [confirmed, setConfirmed] = useState<DemoOrder | null>(null)
   function confirm() {
-    const order = checkoutOrder(snapshot)
+    const order = checkoutOrder(getSnapshot())
     if (!order) return
     setConfirmed(order)
     actions.clearCart()

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import type { StorefrontSnapshot } from '../storefront/storefrontAdapter.ts'
 import { cartTotals, formatMoney, productById } from '../../logic.ts'
 import CartRow from './CartRow.tsx'
@@ -6,7 +6,6 @@ import PromoForm from './PromoForm.tsx'
 
 interface ShoppingBagProps {
   onCheckout: () => void
-  focusOnMount?: boolean
   snapshot: StorefrontSnapshot
   onQuantity: (id: string, delta: number) => void
   onRemove: (id: string) => void
@@ -18,7 +17,6 @@ interface ShoppingBagProps {
 
 export default function ShoppingBag({
   onCheckout,
-  focusOnMount = false,
   snapshot,
   onQuantity,
   onRemove,
@@ -28,9 +26,6 @@ export default function ShoppingBag({
   onRetry,
 }: ShoppingBagProps) {
   const content = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (focusOnMount) content.current?.focus({ preventScroll: true })
-  }, [focusOnMount])
   const available =
     snapshot.phase === 'ready' &&
     snapshot.catalog.length > 0 &&

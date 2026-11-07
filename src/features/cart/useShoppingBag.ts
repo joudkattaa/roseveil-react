@@ -5,13 +5,7 @@ import type {
   StorefrontSnapshot,
 } from '../storefront/storefrontAdapter.ts'
 
-import { checkoutOrder, type DemoOrder } from '../checkout/checkout.logic.ts'
-
-export type ActiveDialog =
-  | null
-  | { kind: 'bag'; focusOnMount?: boolean }
-  | { kind: 'checkout' }
-  | { kind: 'confirmation'; order: DemoOrder }
+export type ActiveDialog = null | { kind: 'bag' }
 
 export function useShoppingBag(
   snapshot: StorefrontSnapshot,
@@ -64,26 +58,8 @@ export function useShoppingBag(
     actions.clearCart()
     notify('Shopping bag cleared.')
   }
-  function beginCheckout() {
-    if (!checkoutOrder(snapshot)) return
-    setActiveDialog({ kind: 'checkout' })
-  }
-  function backToBag() {
-    setActiveDialog({ kind: 'bag', focusOnMount: true })
-  }
-  function confirmCheckout() {
-    // Recheck the current snapshot at submission; never authorize stale prices.
-    if (activeDialog?.kind !== 'checkout') return
-    const order = checkoutOrder(snapshot)
-    if (!order) return
-    setActiveDialog({ kind: 'confirmation', order })
-    actions.clearCart()
-  }
   return {
     bagFeedback,
-    beginCheckout,
-    backToBag,
-    confirmCheckout,
     changeQuantity,
     removeProduct,
     clearBag,

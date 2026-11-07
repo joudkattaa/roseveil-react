@@ -11,5 +11,9 @@ export function useStorefront() {
     adapter.getSnapshot,
     adapter.getSnapshot,
   )
-  return { snapshot, actions: adapter.actions }
+  return {
+    snapshot,
+    actions: adapter.actions,
+    getSnapshot: adapter.getSnapshot,
+  }
 }

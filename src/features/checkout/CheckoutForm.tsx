@@ -1,4 +1,10 @@
 import { useEffect, useRef } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { checkoutSchema, type CheckoutValues } from './checkout.schema.ts'
+import { Field } from '../../shared/ui/shadcn/Field.tsx'
+import { FieldLabel } from '../../shared/ui/shadcn/FieldLabel.tsx'
+import { FieldError } from '../../shared/ui/shadcn/FieldError.tsx'
 import type { DemoOrder } from './checkout.logic.ts'
 import OrderSummary from './OrderSummary.tsx'
 
@@ -13,6 +19,11 @@ export default function CheckoutForm({
   onBack,
   onConfirm,
 }: CheckoutFormProps) {
+  const form = useForm<CheckoutValues>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: { fullName: '', email: '', phone: '', address: '' },
+    shouldFocusError: true,
+  })
   const heading = useRef<HTMLHeadingElement>(null)
   useEffect(() => {
     heading.current?.focus()
@@ -39,56 +50,125 @@ export default function CheckoutForm({
         aria-label="Demo checkout"
         aria-describedby="checkout-demo-note"
         autoComplete="off"
-        onSubmit={(event) => {
-          event.preventDefault()
-          if (!order || !event.currentTarget.reportValidity()) return
-          onConfirm()
-        }}
+        noValidate
+        onSubmit={form.handleSubmit(() => {
+          if (order) onConfirm()
+        })}
       >
         <fieldset disabled={!order}>
           <legend>Demo customer details</legend>
-          <label htmlFor="checkout-name">Full name</label>
-          <input
-            id="checkout-name"
+          <Controller
             name="fullName"
-            type="text"
-            required
-            minLength={2}
-            maxLength={100}
-            pattern=".*\S.*"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="checkout-name">Full name</FieldLabel>
+                <input
+                  {...field}
+                  id="checkout-name"
+                  type="text"
+                  aria-required="true"
+                  aria-invalid={fieldState.invalid}
+                  aria-describedby={
+                    fieldState.invalid ? 'checkout-name-error' : undefined
+                  }
+                />
+                {fieldState.invalid ? (
+                  <FieldError
+                    id="checkout-name-error"
+                    errors={[fieldState.error]}
+                  />
+                ) : null}
+              </Field>
+            )}
           />
-          <label htmlFor="checkout-email">Email</label>
-          <input
-            id="checkout-email"
+          <Controller
             name="email"
-            type="email"
-            required
-            maxLength={254}
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="checkout-email">Email</FieldLabel>
+                <input
+                  {...field}
+                  id="checkout-email"
+                  type="email"
+                  aria-required="true"
+                  aria-invalid={fieldState.invalid}
+                  aria-describedby={
+                    fieldState.invalid ? 'checkout-email-error' : undefined
+                  }
+                />
+                {fieldState.invalid ? (
+                  <FieldError
+                    id="checkout-email-error"
+                    errors={[fieldState.error]}
+                  />
+                ) : null}
+              </Field>
+            )}
           />
-          <label htmlFor="checkout-phone">Phone number</label>
-          <input
-            id="checkout-phone"
+          <Controller
             name="phone"
-            type="tel"
-            required
-            minLength={7}
-            maxLength={30}
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="checkout-phone">Phone number</FieldLabel>
+                <input
+                  {...field}
+                  id="checkout-phone"
+                  type="tel"
+                  aria-required="true"
+                  aria-invalid={fieldState.invalid}
+                  aria-describedby={
+                    fieldState.invalid ? 'checkout-phone-error' : undefined
+                  }
+                />
+                {fieldState.invalid ? (
+                  <FieldError
+                    id="checkout-phone-error"
+                    errors={[fieldState.error]}
+                  />
+                ) : null}
+              </Field>
+            )}
           />
-          <label htmlFor="checkout-address">Shipping address</label>
-          <textarea
-            id="checkout-address"
+          <Controller
             name="address"
-            required
-            minLength={8}
-            maxLength={500}
-            rows={3}
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="checkout-address">
+                  Shipping address
+                </FieldLabel>
+                <textarea
+                  {...field}
+                  id="checkout-address"
+                  rows={3}
+                  aria-required="true"
+                  aria-invalid={fieldState.invalid}
+                  aria-describedby={
+                    fieldState.invalid ? 'checkout-address-error' : undefined
+                  }
+                />
+                {fieldState.invalid ? (
+                  <FieldError
+                    id="checkout-address-error"
+                    errors={[fieldState.error]}
+                  />
+                ) : null}
+              </Field>
+            )}
           />
         </fieldset>
         <div className="checkout-actions">
           <button className="button secondary" type="button" onClick={onBack}>
             Back to shopping bag
           </button>
-          <button className="button" type="submit" disabled={!order}>
+          <button
+            className="button"
+            type="submit"
+            disabled={!order || form.formState.isSubmitting}
+          >
             Confirm demo order
           </button>
         </div>
