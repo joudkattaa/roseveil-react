@@ -36,7 +36,7 @@ export default function ProductImage({
         variant === 'cart'
           ? '70px'
           : variant === 'detail'
-            ? '280px'
+            ? '(min-width: 1200px) 540px, (min-width: 760px) 48vw, calc(100vw - 48px)'
             : '(min-width: 1200px) 250px, (min-width: 900px) 25vw, (min-width: 600px) 34vw, 50vw'
       }
       alt={product.name}

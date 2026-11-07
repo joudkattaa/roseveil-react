@@ -22,6 +22,12 @@ export default function ProductCard({ product, onAdd }: ProductCardProps) {
           product={product}
           secondaryImage={secondaryImages[product.id]}
         />
+        <span className="product-view-cue" aria-hidden="true">
+          View details
+          <svg className="icon" aria-hidden="true">
+            <use href="#i-arrow" />
+          </svg>
+        </span>
       </Link>
       <div className="product-info">
         <p className="product-category">{product.category}</p>
@@ -30,7 +36,10 @@ export default function ProductCard({ product, onAdd }: ProductCardProps) {
             {product.name}
           </Link>
         </h3>
-        <p className="product-price">{formatMoney(product.price)}</p>
+        <div className="product-meta">
+          <p className="product-price">{formatMoney(product.price)}</p>
+          <span className="product-size">{product.size}</span>
+        </div>
       </div>
       <button
         className="add-button"
@@ -41,7 +50,7 @@ export default function ProductCard({ product, onAdd }: ProductCardProps) {
         <svg className="icon" aria-hidden="true">
           <use href="#i-bag" />
         </svg>{' '}
-        ADD TO CART
+        ADD TO BAG
       </button>
     </article>
   )

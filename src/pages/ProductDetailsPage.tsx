@@ -19,46 +19,55 @@ export default function ProductDetailsPage() {
       ),
     )
   return (
-    <PageFrame title={product?.name ?? 'Product Details'}>
-      {product ? (
-        <>
-          <ProductDetails
-            product={product}
-            available={available}
-            onAdd={bag.addProduct}
-          />
-          {!available ? (
-            <button
-              className="button"
-              type="button"
-              disabled={snapshot.phase === 'loading'}
-              onClick={() => {
-                void actions.loadCatalog()
-              }}
-            >
-              Reload collection
+    <div className="product-page">
+      <PageFrame title={product?.name ?? 'Product Details'}>
+        <nav className="product-breadcrumbs" aria-label="Breadcrumb">
+          <Link to="/">Home</Link>
+          <span aria-hidden="true">/</span>
+          <Link to="/shop">Shop</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{product?.name ?? 'Product Details'}</span>
+        </nav>
+        {product ? (
+          <>
+            <ProductDetails
+              product={product}
+              available={available}
+              onAdd={bag.addProduct}
+            />
+            {!available ? (
+              <button
+                className="button"
+                type="button"
+                disabled={snapshot.phase === 'loading'}
+                onClick={() => {
+                  void actions.loadCatalog()
+                }}
+              >
+                Reload collection
+              </button>
+            ) : null}
+          </>
+        ) : state.phase === 'loading' ? (
+          <p role="status">Loading product...</p>
+        ) : state.phase === 'error' ? (
+          <>
+            <p role="alert">Unable to load this product.</p>
+            <button className="button" type="button" onClick={retry}>
+              Try Again
             </button>
-          ) : null}
-        </>
-      ) : state.phase === 'loading' ? (
-        <p role="status">Loading product...</p>
-      ) : state.phase === 'error' ? (
-        <>
-          <p role="alert">Unable to load this product.</p>
-          <button className="button" type="button" onClick={retry}>
-            Try Again
-          </button>
-        </>
-      ) : (
-        <p role="alert">
-          {state.phase === 'invalid'
-            ? 'Invalid product ID.'
-            : 'Product not found.'}
-        </p>
-      )}
-      <Link className="text-button" to="/shop">
-        Back to Shop
-      </Link>
-    </PageFrame>
+          </>
+        ) : (
+          <p role="alert">
+            {state.phase === 'invalid'
+              ? 'Invalid product ID.'
+              : 'Product not found.'}
+          </p>
+        )}
+        <Link className="text-button product-back-link" to="/shop">
+          Back to Shop
+        </Link>
+      </PageFrame>
+    </div>
   )
 }

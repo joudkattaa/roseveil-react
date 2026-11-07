@@ -326,3 +326,19 @@
 :root[data-theme='dark'] .checkout-form [aria-invalid='true'] {
   border-color: var(--theme-accent);
 }
+:root[data-theme='dark'] .product-view-cue {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] .product-detail-media {
+  background: linear-gradient(145deg, var(--theme-surface), var(--theme-bg));
+  border-color: var(--theme-border);
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-theme='dark'] .product-card .add-button:hover {
+    background: var(--theme-accent);
+    color: var(--theme-bg);
+    border-color: var(--theme-accent);
+  }
+}
