@@ -19,8 +19,11 @@ import {
   unavailableMessage,
 } from './features/navigation/navigation.ts'
 
+import { useTheme } from './features/theme/useTheme.ts'
+
 export default function App() {
   const { snapshot, actions } = useStorefront()
+  const { toggleTheme } = useTheme(snapshot.theme, actions.setTheme)
   const { notification, notify, copyCode, clearNotification } =
     useNotification()
   const {
@@ -51,6 +54,8 @@ export default function App() {
           <>
             <AnnouncementBar onCopyCode={copyCode} />
             <SiteHeader
+              theme={snapshot.theme}
+              onToggleTheme={toggleTheme}
               bagCount={bagCount}
               onOpenBag={() => setActiveDialog({ kind: 'bag' })}
               items={navigationItems}

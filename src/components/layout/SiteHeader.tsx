@@ -7,7 +7,12 @@ import type {
 } from '../../types/navigation.types.ts'
 import MainNavigation from './MainNavigation.tsx'
 
+import ThemeToggle from '../../features/theme/ThemeToggle.tsx'
+import type { Theme } from '../../modules/state/state.types.ts'
+
 interface SiteHeaderProps {
+  theme: Theme
+  onToggleTheme: () => void
   bagCount: number
   onOpenBag: () => void
   items: readonly NavigationItem[]
@@ -21,6 +26,8 @@ interface SiteHeaderProps {
 }
 
 export default function SiteHeader({
+  theme,
+  onToggleTheme,
   bagCount,
   onOpenBag,
   items,
@@ -154,21 +161,7 @@ export default function SiteHeader({
           navigationRef={navigationRef}
         />
         <div className="header-actions">
-          <button
-            id="theme-toggle"
-            className="icon-button theme-toggle"
-            type="button"
-            disabled
-            aria-label="Theme switching unavailable"
-            aria-describedby="header-unavailable"
-          >
-            <svg className="theme-moon" aria-hidden="true">
-              <use href="#i-moon" />
-            </svg>
-            <svg className="theme-sun" aria-hidden="true">
-              <use href="#i-sun" />
-            </svg>
-          </button>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           <button
             ref={searchToggleRef}
             id="search-toggle"

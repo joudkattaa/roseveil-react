@@ -286,3 +286,27 @@
 :root[data-theme='dark'] dialog::backdrop {
   background: #100307cc;
 }
+
+/* Complete the existing burgundy palette for active controls and feedback. */
+:root[data-theme='dark']
+  :is(.button.secondary, .promo-form input, .product-image-fallback) {
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+:root[data-theme='dark'] .theme-toggle[aria-pressed='true'] {
+  color: var(--theme-accent);
+}
+:root[data-theme='dark'] .promo-form input::placeholder {
+  color: var(--theme-muted);
+}
+:root[data-theme='dark'] :is(.form-status, .cart-clear) {
+  color: var(--theme-accent);
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-theme='dark'] .button:not(:disabled):hover {
+    background: var(--theme-hover);
+    border-color: var(--theme-hover);
+    color: var(--theme-bg);
+  }
+}

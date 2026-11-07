@@ -1,6 +1,8 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { createStorefrontAdapter } from './storefrontAdapter.ts'
 
+import { createThemeStorage } from '../theme/themeStorage.ts'
+
 function developmentQuery(): string {
   const params = new URLSearchParams()
   if (import.meta.env.DEV && typeof window !== 'undefined') {
@@ -15,7 +17,10 @@ function developmentQuery(): string {
 
 export function useStorefront() {
   const [adapter] = useState(() =>
-    createStorefrontAdapter({ query: developmentQuery() }),
+    createStorefrontAdapter({
+      query: developmentQuery(),
+      storage: createThemeStorage(),
+    }),
   )
   const snapshot = useSyncExternalStore(
     adapter.subscribe,
