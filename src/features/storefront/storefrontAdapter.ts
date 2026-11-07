@@ -1,12 +1,12 @@
-import { createState } from '../state.ts'
-import type { Product } from '../modules/products/products.types.ts'
-import type { CartItem } from '../modules/cart/cart.types.ts'
+import { createState } from '../../state.ts'
+import type { Product } from '../../modules/products/products.types.ts'
+import type { CartItem } from '../../modules/cart/cart.types.ts'
 import type {
   Profile,
   StorageAdapter,
   Theme,
-} from '../modules/state/state.types.ts'
-import type { CatalogFailure, CatalogPhase } from '../types/ui.types.ts'
+} from '../../modules/state/state.types.ts'
+import type { CatalogFailure, CatalogPhase } from '../../types/ui.types.ts'
 
 export interface StorefrontSnapshot {
   readonly catalog: readonly Readonly<Product>[]

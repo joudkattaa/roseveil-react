@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createStorefrontAdapter } from '../src/state/storefrontAdapter.ts'
+import { createStorefrontAdapter } from '../src/features/storefront/storefrontAdapter.ts'
 import { products } from '../server/catalog.ts'
 import { cartTotals, findProducts } from '../src/logic.ts'
 import type { StorageAdapter } from '../src/modules/state/state.types.ts'

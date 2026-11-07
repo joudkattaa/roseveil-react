@@ -9,7 +9,7 @@ import {
 import userEvent from '@testing-library/user-event'
 import { expect, it, vi } from 'vitest'
 import App from '../src/App.tsx'
-import Dialog from '../src/components/shared/Dialog.tsx'
+import Dialog from '../src/shared/ui/Dialog.tsx'
 import { products } from '../server/catalog.ts'
 
 function isUnknownArray(value: unknown): value is unknown[] {

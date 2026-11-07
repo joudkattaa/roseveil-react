@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import type { StorefrontSnapshot } from '../../state/storefrontAdapter.ts'
+import type { StorefrontSnapshot } from '../storefront/storefrontAdapter.ts'
 import { cartTotals, formatMoney, productById } from '../../logic.ts'
 import CartRow from './CartRow.tsx'
 import PromoForm from './PromoForm.tsx'

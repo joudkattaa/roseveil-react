@@ -1,5 +1,5 @@
 import type { Category } from '../../modules/products/products.types.ts'
-import SearchField from '../catalog/SearchField.tsx'
+import SearchField from '../../features/catalog/SearchField.tsx'
 import { useEffect, useRef, useState } from 'react'
 import type {
   NavigationId,

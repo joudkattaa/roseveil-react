@@ -1,5 +1,5 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
-import { createStorefrontAdapter } from '../state/storefrontAdapter.ts'
+import { createStorefrontAdapter } from './storefrontAdapter.ts'
 
 function developmentQuery(): string {
   const params = new URLSearchParams()
