@@ -49,6 +49,25 @@ export default function CatalogStatus({
       <p id="catalog-status" role="status" aria-atomic="true">
         {message}
       </p>
+      {phase === 'ready' && catalogEmpty ? (
+        <div className="empty-state" id="api-empty-state">
+          <h3>The collection is taking a little pause.</h3>
+          <p>
+            There are no products to browse right now. Your saved shopping bag
+            is safe. Please check again later.
+          </p>
+          <button
+            ref={retryRef}
+            className="button"
+            type="button"
+            onClick={() => {
+              void onRetry()
+            }}
+          >
+            Check Again
+          </button>
+        </div>
+      ) : null}
       {phase === 'ready' && !catalogEmpty && resultCount === 0 ? (
         <div id="empty-state" className="empty-state">
           <h3>A little change of search?</h3>

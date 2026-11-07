@@ -1,3 +1,7 @@
+import {
+  scenarioFetch,
+  type CatalogScenario,
+} from '../catalog/api/catalogScenarios.ts'
 import { abortableFetch } from '../../shared/api/abortableFetch.ts'
 import { createState } from '../../state.ts'
 import type { Product } from '../../modules/products/products.types.ts'
@@ -41,6 +45,7 @@ export interface StorefrontAdapter {
 interface StorefrontOptions {
   readonly storage?: StorageAdapter
   readonly fetcher?: typeof fetch
+  readonly scenario?: CatalogScenario
   readonly query?: string
 }
 
@@ -48,7 +53,10 @@ export function createStorefrontAdapter(
   options: StorefrontOptions = {},
 ): StorefrontAdapter {
   const state = createState(options.storage)
-  const fetcher = options.fetcher ?? globalThis.fetch
+  const transport = options.fetcher ?? globalThis.fetch
+  const fetcher = options.scenario
+    ? scenarioFetch(transport, options.scenario)
+    : transport
   const query = options.query ?? ''
   const listeners = new Set<() => void>()
   let inFlight: Promise<void> | null = null

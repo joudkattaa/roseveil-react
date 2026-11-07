@@ -1,4 +1,5 @@
 import type { Connect } from 'vite'
+import { catalogScenarioResponse } from './catalog-scenarios.ts'
 import { products } from './catalog.ts'
 import { productByIdResponse } from './product-by-id.ts'
 
@@ -8,6 +9,20 @@ export function productsMiddleware(
 ): Connect.NextHandleFunction {
   return async (request, response, next) => {
     const url = new URL(request.url ?? '/', 'http://localhost')
+    if (development) {
+      const scenario = await catalogScenarioResponse({
+        url: url.href,
+        method: request.method ?? 'GET',
+      })
+      if (scenario) {
+        response.statusCode = scenario.status
+        scenario.headers.forEach((value, name) =>
+          response.setHeader(name, value),
+        )
+        response.end(await scenario.text())
+        return
+      }
+    }
     if (url.pathname.startsWith('/api/products/')) {
       const result = productByIdResponse({
         url: url.href,

@@ -23,7 +23,7 @@ Account/contact/policy dialogs and parallax remain unavailable. Sequential origi
 
 ### Actual React component tree
 
-Mounted by src/main.tsx inside StrictMode. One StorefrontProvider sits above BrowserRouter and all pages. App declares routes only. There are 36 reusable component files with named Props interfaces, plus App, RootLayout and seven page entry components without incoming props. Repeated names below are instances of the same component.
+Mounted by src/main.tsx inside StrictMode. One StorefrontProvider sits above BrowserRouter and all pages. App declares routes only. There are 38 reusable component files with named Props interfaces, plus App, RootLayout and seven page entry components without incoming props. Repeated names below are instances of the same component.
 
 ```text
 StrictMode
@@ -34,11 +34,11 @@ StrictMode
                 |-- SiteLayout
                 |   |-- header slot: AnnouncementBar, SiteHeader
                 |   |   `-- SiteHeader: MainNavigation, SearchField, ThemeToggle
-                |   |-- main: Suspense > Outlet (one page below)
+                |   |-- main: Suspense > Outlet > LazyPage > ErrorBoundary (one page below)
                 |   |   |-- HomePage: HeroSection, CategorySection, AboutSection,
-                |   |   |   CatalogSection, BeautyPromise (original section order)
+                |   |   |   ErrorBoundary > CatalogSection, BeautyPromise (original section order)
                 |   |   |   `-- HeroSection: HeroArtwork, Benefits/Ribbon DOM markup
-                |   |   |-- ShopPage: PageFrame > CatalogSection
+                |   |   |-- ShopPage: PageFrame > ErrorBoundary > CatalogSection
                 |   |   |-- ProductDetailsPage: PageFrame > ProductDetails > ProductImage (larger detail artwork)
                 |   |   |-- AboutPage: PageFrame > AboutSection, BeautyPromise
                 |   |   |-- BagPage: PageFrame > ShoppingBag
@@ -77,9 +77,11 @@ DemoOrderConfirmation > OrderSummary
 | /checkout     | CheckoutPage (local demo)                   |
 | *             | NotFoundPage (frontend 404)                 |
 
-React Router 7.18.5 provides BrowserRouter, Routes, Outlet, Link/NavLink and URL parameters. All seven page entries use module-level React.lazy imports. Suspense surrounds Outlet, leaving Header/Footer visible during loading. Production builds emit separate page chunks; reused features can also be loaded by the shared shell. Internal navigation supports Back/Forward. PageFrame updates page titles and heading focus; Home sets its title and the layout focuses main on pathname changes.
+React Router 7.18.5 provides BrowserRouter, Routes, Outlet, Link/NavLink and URL parameters. All seven page entries use module-level React.lazy imports. LazyPage adds a page ErrorBoundary and creates a fresh lazy instance only when Try Again is clicked, so React does not reuse a rejected lazy promise. Route keys keep each page instance separate. Home and Shop also wrap CatalogSection in a local ErrorBoundary. Suspense surrounds Outlet, leaving Header/Footer visible during loading. Production builds emit separate page chunks; reused features can also be loaded by the shared shell. Internal navigation supports Back/Forward. PageFrame updates page titles and heading focus; Home sets its title and the layout focuses main on pathname changes.
 
 Vite development/preview serves the SPA on direct page URLs and refresh. A future static host needs an SPA fallback for page URLs while preserving /api/* handlers. No deployment configuration or deployment was added.
+
+Development-only /delay/3000, /fail/500 and /empty routes render ShopPage for the API scenarios documented below. They are absent from the production route tree.
 
 ### Feature organization
 
@@ -126,6 +128,8 @@ The original migration commit is retained; Git history has not been rewritten.
 | DemoOrderConfirmation / src/features/checkout/DemoOrderConfirmation.tsx | Renders only the confirmed item/totals snapshot and focuses its heading. No customer details are retained.                                                                                                                                                                                                                                                      |
 | useScrollReveal / src/shared/motion/useScrollReveal.ts                  | SiteLayout supplies its main ref. One IntersectionObserver and a scoped MutationObserver detect lazy-page sections and reveal them once using native animations, skips focused content and reduced motion, and cleans observers/listeners/animations. No section React state or scroll listeners.                                                               |
 | useHeroEntrance / src/components/hero/useHeroEntrance.ts                | HeroArtwork owns loaded asset IDs, failure, viewport entrance and reduced-motion state through this hook. It checks cached images and cleans its preference listener. Only complete scenes animate; original fallback stays visible otherwise.                                                                                                                  |
+| ErrorBoundary / src/shared/ui/ErrorBoundary.tsx                         | Owns only a failed-render boolean. Its class lifecycle catches rendering/lazy-import errors and focuses Try Again; retry remounts children. It does not handle API error state or recreate the storefront.                                                                                                                                                      |
+| LazyPage / src/shared/ui/LazyPage.tsx                                   | Owns the current lazy component identity. Starts with the module-level import; an explicit retry creates a fresh lazy instance with the same loader. The boundary resets on pathname changes.                                                                                                                                                                   |
 | All other components                                                    | Render props/static content and forward events; no local useState.                                                                                                                                                                                                                                                                                              |
 
 CatalogSection derives visible results with findProducts(category, query, featured, sort, products). Header search and Shop controls share the Shop filters. Home owns independent filters: its category tiles and collection buttons stay on /, select a category and scroll with reduced-motion support. View All Products, Hero Shop Now and global Shop links navigate to /shop and reset its filters to the full collection. HomeCatalogProvider is scoped to the homepage catalog feature and sits above the layout so Home Header category buttons and homepage controls share its filters. It retains Home filters across Back/Forward; Home navigation resets to featured defaults. Shop filters persist independently in RootLayout until reset. Neither filter owner stores cart data. ProductGrid uses product.id keys; CartRow uses saved item.id. ShoppingBag derives current totals only when the full catalog is ready and all saved lines resolve. StorefrontDialog renders one notification target for modal feedback; RootLayout keeps the page Toast empty during that modal. Benefits and Signature Ribbon are markup inside HeroSection, not separate components. SiteLayout receives composed ReactNode slots; it does not own feature state.
@@ -140,7 +144,7 @@ Consumer rerenders and page-like child remounts preserve the same store. A full 
 
 ### Exact component prop contracts
 
-The declarations below are copied verbatim from the named source files. App has no incoming props. ReactNode, Ref, RefObject and ComponentProps come from React. shadcn FieldProps extends native div props and the official fieldVariants orientation props (vertical, horizontal or responsive); Label props extend the Radix Label root. Product and Category come from src/modules/products/products.types.ts; CatalogFilters and CatalogPhase come from src/types/ui.types.ts; NavigationItem and NavigationId come from src/types/navigation.types.ts; StorefrontSnapshot comes from src/features/storefront/storefrontAdapter.ts. StorefrontAdapter comes from src/features/storefront/storefrontAdapter.ts; ActiveDialog comes from src/features/cart/useShoppingBag.ts. Theme comes from src/modules/state/state.types.ts. DemoOrder comes from src/features/checkout/checkout.logic.ts. These are documentation copies, not new declarations.
+The declarations below are copied verbatim from the named source files. App has no incoming props. ReactNode, Ref, RefObject, ComponentProps, ComponentType and LazyExoticComponent come from React. shadcn FieldProps extends native div props and the official fieldVariants orientation props (vertical, horizontal or responsive); Label props extend the Radix Label root. Product and Category come from src/modules/products/products.types.ts; CatalogFilters and CatalogPhase come from src/types/ui.types.ts; NavigationItem and NavigationId come from src/types/navigation.types.ts; StorefrontSnapshot comes from src/features/storefront/storefrontAdapter.ts. StorefrontAdapter comes from src/features/storefront/storefrontAdapter.ts; ActiveDialog comes from src/features/cart/useShoppingBag.ts. Theme comes from src/modules/state/state.types.ts. DemoOrder comes from src/features/checkout/checkout.logic.ts. These are documentation copies, not new declarations.
 
 #### src/features/cart/CartRow.tsx
 
@@ -512,6 +516,25 @@ interface FieldErrorProps extends ComponentProps<'div'> {
 interface LabelProps extends ComponentProps<typeof Root> {}
 ```
 
+#### src/shared/ui/ErrorBoundary.tsx
+
+```ts
+interface ErrorBoundaryProps {
+  children: ReactNode
+  label: string
+  onRetry?: () => void
+}
+```
+
+#### src/shared/ui/LazyPage.tsx
+
+```ts
+interface LazyPageProps {
+  initial: LazyExoticComponent<ComponentType>
+  load: () => Promise<{ default: ComponentType }>
+}
+```
+
 ## Business rules and persistence
 
 Prices are integer USD cents from the validated full catalog. GLOW20 discounts merchandise by 20%, rounded to cents. Nonempty bags pay $5.95 shipping unless discounted merchandise is strictly above $50; exactly $50 still pays shipping. Quantity is limited to 99; decrement to zero removes a row. Clear Bag clears its promo.
@@ -538,6 +561,8 @@ The Controller/Field pattern follows the [official React Hook Form guide](https:
 
 ## Subtle motion and optional second photos
 
+The responsive Hero JPEG preload is declared only by HomePage, not index.html. Its as=image, type=image/jpeg, high priority, imageSrcSet and imageSizes match the fallback Hero image. Direct Shop, Checkout and development-scenario entries do not preload Home artwork. No preload effect or animation change was added.
+
 HeroArtwork now reuses the original stage photo and four transparent tube/pump/serum/jar assets from the original project, copied byte-for-byte. Original responsive artwork sizing, desktop centering and layer percentage positions are preserved. The tube, serum, jar and pump enter at 0/180/360/540ms with 1100ms easing after every scene image loads. Cached images are checked on mount. IntersectionObserver watches the Hero section using the original 12% entry threshold. A full viewport exit resets the layers to ready; each return plays the original sequence again. Partial visibility changes never restart it while visible. Ordinary React updates and duplicate image loads do not replay it. The observer disconnects on unmount, image failure or reduced motion. Without IntersectionObserver, the loaded entrance runs once instead. The existing flattened photo stays visible while loading, on image failure and for reduced motion. No artwork was cropped, generated or replaced. The former whole-artwork animation was removed; copy still has its gentle entrance.
 
 Product cards show the original photo, category, real size and price with serif headings and an always-visible View details cue. Both links and Add to Bag stay visible on touch screens. The product route uses a full-page two-column presentation (stacked on mobile), breadcrumbs, a larger uncropped original image, size/collection facts, a bag link and native disclosures for accurate demo shipping and concept information. No reviews, stock claims, alternate images or product claims were invented. ProductImage supplies larger responsive sizes for the detail view. No new component state, effects or dependencies were added for the presentation.
@@ -560,6 +585,31 @@ src/features/catalog/api/productDetails.api.ts exports getProductById(id, { sign
 
 Vite middleware and api/products/[id].ts share server/product-by-id.ts for GET /api/products/:id. The response is one original Product object; missing IDs return 404, malformed IDs return 400, unsupported methods return 405 and responses use no-store. The existing collection endpoint and its development simulations are unchanged. ProductDetailsPage reads useParams and useProductDetails fetches this endpoint independently of the catalog. Invalid IDs, missing products, loading, errors and Retry have separate feedback. ID changes/unmount abort obsolete requests. Adding requires matching current shared-catalog prices; unavailable catalog data offers Reload collection.
 
+## Loading, render errors and assignment API scenarios
+
+Suspense shows the existing Loading page fallback while page JavaScript loads; it does not handle effect-based API requests. CatalogStatus and ProductDetailsPage continue to own request loading/error/retry feedback. ErrorBoundary handles a different problem: a component render or lazy import throwing. Its fallback says this is a display error and provides Try Again. The shared Header, Footer, theme and quick bag remain outside page boundaries. On Home, a collection render failure leaves Hero and editorial content mounted. Product details and all other pages have a page boundary. Ordinary retries preserve the one storefront adapter, saved bag and theme. Persistent source errors or browser-cached missing chunks may still require a refresh or corrected code; retries never loop automatically.
+
+The protected BASE_URL is /api and is unchanged. New local middleware in server/catalog-scenarios.ts supports literal GET /api/delay/3000, /api/fail/500 and /api/empty paths in Vite development only. No external backend support is assumed, and these are not query-parameter substitutes. Preview/production do not enable these endpoints or the matching UI test routes. Existing query-based development simulations remain separate and unchanged.
+
+Run a dedicated development server:
+
+```text
+npm run dev -- --host 127.0.0.1 --port 5175 --strictPort
+```
+
+| Open this exact local page URL   | Expected result / Network request                                                                                                                                                    |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| http://127.0.0.1:5175/delay/3000 | Loading products for about three seconds, then the original catalog. Network: GET /api/delay/3000.                                                                                   |
+| http://127.0.0.1:5175/fail/500   | Product-loading error and Try Again. First GET /api/fail/500 returns 500. Try Again sends a real GET /api/products and recovers when the normal server is available.                 |
+| http://127.0.0.1:5175/empty      | Helpful empty-catalog message, with Check Again. GET /api/empty returns { items: [], total: 0 }. Checking again repeats that request, so the intentional empty response stays empty. |
+| http://127.0.0.1:5175/shop       | Normal catalog after a full page load; searching an unmatched phrase shows the separate no-match state with reset.                                                                   |
+
+The student manually tested all three scenario pages: delay showed loading, fail showed an error and recovered after Try Again, and empty stayed empty after Check Again. These browser observations do not substitute for separate screen-reader or render-error recovery checks.
+
+Open each URL directly or refresh it. StorefrontProvider selects the test transport once from the initial document pathname; client-side navigation retains that store and its selected scenario. Loading the normal /shop URL with a full refresh exits a scenario. The same three API paths can be opened under http://127.0.0.1:5175/api/ to inspect their raw JSON/status; /api/fail/500 always fails. Only the storefront fail scenario is one-shot, with normal API recovery on retry. The fetch wrapper in catalogScenarios.ts redirects only collection requests, preserving the protected client validation and existing AbortController/deduplication lifecycle. It never redirects single-product requests.
+
+A failed, cancelled or empty catalog cannot authorize stale prices or checkout. Saved bag IDs and GLOW20 remain intact; bag controls, shared navigation and theme are still available. API-empty feedback is separate from filtering a nonempty catalog to zero matches. Check Again retries the API, whereas Explore All Products resets filters.
+
 ## Verification
 
 ```text
@@ -570,7 +620,7 @@ npm run format:check
 npm test
 ```
 
-Tests also cover route entries/titles/focus, Back/Forward, BrowserRouter direct URLs, shared cart across pages, routed demo checkout, product request retry/cancellation and lazy-page fallback with persistent Header/Footer. Checkout tests also verify popup-to-page navigation, back-to-bag editing, and cart/price changes during asynchronous validation. Tests cover API validation/methods, catalog selection, snapshot/subscription behavior, shared Context consumers and page-like remounts, refresh-equivalent persistence, missing-provider errors and StrictMode store stability, cancellation/late responses/body loading/immediate retries, provider cleanup/rapid remounts, validated single-product requests and invalid IDs, cart persistence/limits/discounts, real React StrictMode loading, modal interactions and synchronized search, theme defaults/persistence/keyboard switching/storage failures, bag remount/clear/quantity limits and focus after removal, and demo checkout validation/confirmation/back/empty/error/cart clearing, image swap load/failure fallback, product grid actions without floating metadata, reveal cleanup/reduced motion and animated dialog focus restoration. The suite limits concurrent jsdom workers to two and allows 15 seconds per test for full storefront interaction workflows. jsdom modal methods are simulated: native focus trapping, real keyboard/browser behavior, clipboard permissions, mobile visual parity, reduced motion and console/asset checks still require browser acceptance.
+Step 5 tests cover real HTTP three-second timing and literal endpoint statuses/methods/development gating, delayed loading under StrictMode, one-shot failure recovery, preserved bag/theme/navigation, empty versus no-match states, silent cancellation/retry, render-error isolation and retrying rejected lazy imports. Tests also cover route entries/titles/focus, Back/Forward, BrowserRouter direct URLs, shared cart across pages, routed demo checkout, product request retry/cancellation and lazy-page fallback with persistent Header/Footer. Checkout tests also verify popup-to-page navigation, back-to-bag editing, and cart/price changes during asynchronous validation. Tests cover API validation/methods, catalog selection, snapshot/subscription behavior, shared Context consumers and page-like remounts, refresh-equivalent persistence, missing-provider errors and StrictMode store stability, cancellation/late responses/body loading/immediate retries, provider cleanup/rapid remounts, validated single-product requests and invalid IDs, cart persistence/limits/discounts, real React StrictMode loading, modal interactions and synchronized search, theme defaults/persistence/keyboard switching/storage failures, bag remount/clear/quantity limits and focus after removal, and demo checkout validation/confirmation/back/empty/error/cart clearing, image swap load/failure fallback, product grid actions without floating metadata, reveal cleanup/reduced motion and animated dialog focus restoration. The suite limits concurrent jsdom workers to two and allows 15 seconds per test for full storefront interaction workflows. jsdom modal methods are simulated: native focus trapping, real keyboard/browser behavior, clipboard permissions, mobile visual parity, reduced motion and console/asset checks still require browser acceptance.
 
 Development-only URLs: ?api-delay=1000, ?api-error=500, ?api-empty=1. Forced failures remain forced during Retry; automated recovery tests replace a failing response with success in the same mounted app. Preview/production ignore simulations.
 
@@ -578,6 +628,6 @@ All five official ShopBoard Debug Lab bugs were reproduced and their fixes verif
 
 ## Tooling
 
-Final local verification: typecheck, zero-warning lint, build, formatting check and all 91 tests across 17 suites passed. The nine protected modules and original assets match their verified baseline. The student reports successful browser checks for routing, Home/Shop navigation, and the shared bag/checkout flow. Native screen-reader behavior remains unverified. Installation used legacy peer resolution; `npm ls --depth=0` completed successfully and the suite ran with React 19.3.1, Vite 8.3.5, Vitest 4.1.12 and jsdom 26.1.0. npm also resolved existing development tools to plugin-react 6.2.1 and Oxlint 1.91.0 within their existing declared ranges. Routing uses React Router 7.18.5. Checkout uses react-hook-form 7.91.0, zod 4.6.7 and @hookform/resolvers 5.9.2. Official shadcn Field support uses @radix-ui/react-label 2.1.17, class-variance-authority 0.7.1, clsx 2.1.1 and tailwind-merge 3.7.0.
+Final local verification: typecheck, zero-warning lint, build, formatting check and all 107 tests across 21 suites passed. The nine protected modules and original assets match their verified baseline. The student reports successful browser checks for routing, Home/Shop navigation, and the shared bag/checkout flow. Native screen-reader behavior remains unverified. Installation used legacy peer resolution; `npm ls --depth=0` completed successfully and the suite ran with React 19.3.1, Vite 8.3.5, Vitest 4.1.12 and jsdom 26.1.0. npm also resolved existing development tools to plugin-react 6.2.1 and Oxlint 1.91.0 within their existing declared ranges. Routing uses React Router 7.18.5. Checkout uses react-hook-form 7.91.0, zod 4.6.7 and @hookform/resolvers 5.9.2. Official shadcn Field support uses @radix-ui/react-label 2.1.17, class-variance-authority 0.7.1, clsx 2.1.1 and tailwind-merge 3.7.0.
 
 Prettier, Oxlint, Husky and lint-staged are configured. Exact protected paths are excluded from formatting and staged writers. The two instructor-required Vercel React skills are under .claude/skills; Vite-applicable rules were applied.

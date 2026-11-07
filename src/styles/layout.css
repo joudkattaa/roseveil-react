@@ -3748,3 +3748,16 @@ dialog {
     text-underline-offset: 4px;
   }
 }
+.render-error {
+  margin-block: 24px;
+  padding-block: 24px;
+  border-block: 1px solid var(--line);
+}
+.render-error h2 {
+  margin-bottom: 12px;
+}
+.render-error p {
+  max-width: 58ch;
+  margin-bottom: 20px;
+  color: var(--muted);
+}

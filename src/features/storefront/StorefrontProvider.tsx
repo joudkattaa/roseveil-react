@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { createStorefrontAdapter } from './storefrontAdapter.ts'
 import { StorefrontContext } from './storefront.context.ts'
+import { catalogScenarioFromPath } from '../catalog/api/catalogScenarios.ts'
 import { createThemeStorage } from '../theme/themeStorage.ts'
 
 interface StorefrontProviderProps {
@@ -28,6 +29,10 @@ export default function StorefrontProvider({
   const [adapter] = useState(() =>
     createStorefrontAdapter({
       query: developmentQuery(),
+      scenario:
+        import.meta.env.DEV && typeof window !== 'undefined'
+          ? catalogScenarioFromPath(window.location.pathname)
+          : undefined,
       storage: createThemeStorage(),
     }),
   )
