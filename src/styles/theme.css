@@ -310,3 +310,9 @@
     color: var(--theme-bg);
   }
 }
+
+:root[data-theme='dark'] .checkout-form :is(input, textarea) {
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}

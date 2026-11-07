@@ -3142,3 +3142,114 @@ dialog {
   outline: 2px solid var(--rose-dark);
   outline-offset: 4px;
 }
+
+/* Keep bag feedback and long amounts usable at narrow widths. */
+.promo-form .form-status {
+  min-height: 2.5em;
+}
+.cart-totals > div {
+  gap: 16px;
+}
+.cart-totals > div > span:last-child {
+  text-align: right;
+}
+
+/* Demo checkout uses the existing bag dialog and brand controls. */
+.checkout-step {
+  min-width: 0;
+}
+.checkout-step > h3 {
+  font: 500 26px/1.2 var(--serif);
+}
+.checkout-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin-block: 12px 20px;
+}
+.checkout-summary {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  margin-block: 20px;
+}
+.checkout-summary h3 {
+  font: 500 24px/1.2 var(--serif);
+}
+.checkout-items {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+.checkout-items li,
+.checkout-totals > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 8px;
+  font-size: 13px;
+}
+.checkout-items li > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.checkout-items small {
+  display: block;
+  color: var(--muted);
+}
+.checkout-totals {
+  margin: 0;
+}
+.checkout-totals dd {
+  margin: 0;
+  text-align: right;
+}
+.checkout-totals .grand-total {
+  border-top: 1px solid var(--line);
+  font-weight: 600;
+  margin-top: 8px;
+}
+.checkout-form fieldset {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.checkout-form legend {
+  padding: 0;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.checkout-form label {
+  font-size: 13px;
+}
+.checkout-form :is(input, textarea) {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  font: inherit;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.checkout-form textarea {
+  resize: vertical;
+}
+.checkout-form :is(input, textarea):focus-visible {
+  outline: 2px solid var(--rose-dark);
+  outline-offset: 3px;
+}
+.checkout-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.checkout-actions .button {
+  flex: 1 1 200px;
+  min-height: 44px;
+}

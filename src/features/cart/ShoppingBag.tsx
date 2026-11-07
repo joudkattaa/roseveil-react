@@ -1,10 +1,12 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import type { StorefrontSnapshot } from '../storefront/storefrontAdapter.ts'
 import { cartTotals, formatMoney, productById } from '../../logic.ts'
 import CartRow from './CartRow.tsx'
 import PromoForm from './PromoForm.tsx'
 
 interface ShoppingBagProps {
+  onCheckout: () => void
+  focusOnMount?: boolean
   snapshot: StorefrontSnapshot
   onQuantity: (id: string, delta: number) => void
   onRemove: (id: string) => void
@@ -15,6 +17,8 @@ interface ShoppingBagProps {
 }
 
 export default function ShoppingBag({
+  onCheckout,
+  focusOnMount = false,
   snapshot,
   onQuantity,
   onRemove,
@@ -24,6 +28,9 @@ export default function ShoppingBag({
   onRetry,
 }: ShoppingBagProps) {
   const content = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (focusOnMount) content.current?.focus({ preventScroll: true })
+  }, [focusOnMount])
   const available =
     snapshot.phase === 'ready' &&
     snapshot.catalog.length > 0 &&
@@ -35,7 +42,13 @@ export default function ShoppingBag({
     content.current?.focus({ preventScroll: true })
   }
   return (
-    <div ref={content} tabIndex={-1} id="cart-content">
+    <div
+      ref={content}
+      tabIndex={-1}
+      id="cart-content"
+      role="group"
+      aria-label="Shopping bag contents"
+    >
       {!snapshot.cart.length ? (
         <div className="cart-empty">
           <h3>Your next little luxury awaits.</h3>
@@ -122,14 +135,14 @@ export default function ShoppingBag({
           <button
             className="button cart-checkout"
             type="button"
-            disabled
-            aria-describedby="checkout-unavailable"
+            disabled={!available}
+            onClick={onCheckout}
+            aria-describedby="checkout-demo"
           >
             DEMO CHECKOUT
           </button>
-          <p id="checkout-unavailable" className="cart-demo">
-            Checkout is not implemented. No payment is collected or real order
-            placed.
+          <p id="checkout-demo" className="cart-demo">
+            Demo only. No real payment, real order or shipping request occurs.
           </p>
           <button className="text-button" type="button" onClick={onContinue}>
             Continue shopping

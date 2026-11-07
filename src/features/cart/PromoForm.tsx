@@ -34,6 +34,8 @@ export default function PromoForm({ appliedCode, onApply }: PromoFormProps) {
           id="promo-code"
           value={value}
           onChange={(event) => setValue(event.target.value)}
+          readOnly={Boolean(appliedCode)}
+          aria-describedby="promo-status"
           maxLength={20}
           autoComplete="off"
           placeholder="GLOW20"
@@ -42,7 +44,7 @@ export default function PromoForm({ appliedCode, onApply }: PromoFormProps) {
           {appliedCode ? 'REMOVE' : 'APPLY'}
         </button>
       </div>
-      <p className="form-status" role="status">
+      <p id="promo-status" className="form-status" role="status">
         {error ||
           (appliedCode ? 'GLOW20 applied — enjoy 20% off your items.' : '')}
       </p>

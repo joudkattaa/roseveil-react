@@ -8,7 +8,14 @@ import type {
 } from '../storefront/storefrontAdapter.ts'
 import type { ActiveDialog } from './useShoppingBag.ts'
 
+import CheckoutForm from '../checkout/CheckoutForm.tsx'
+import DemoOrderConfirmation from '../checkout/DemoOrderConfirmation.tsx'
+import { checkoutOrder } from '../checkout/checkout.logic.ts'
+
 interface StorefrontDialogProps {
+  beginCheckout: () => void
+  backToBag: () => void
+  confirmCheckout: () => void
   activeDialog: ActiveDialog
   setActiveDialog: (value: ActiveDialog) => void
   selectedProduct: Readonly<Product> | undefined
@@ -24,6 +31,9 @@ interface StorefrontDialogProps {
 }
 
 export default function StorefrontDialog({
+  beginCheckout,
+  backToBag,
+  confirmCheckout,
   activeDialog,
   setActiveDialog,
   selectedProduct,
@@ -44,7 +54,11 @@ export default function StorefrontDialog({
           title={
             activeDialog.kind === 'bag'
               ? 'Your Shopping Bag'
-              : (selectedProduct?.name ?? 'Product unavailable')
+              : activeDialog.kind === 'checkout'
+                ? 'Demo Checkout'
+                : activeDialog.kind === 'confirmation'
+                  ? 'Demo Confirmation'
+                  : (selectedProduct?.name ?? 'Product unavailable')
           }
           onClose={() => {
             setActiveDialog(null)
@@ -53,6 +67,11 @@ export default function StorefrontDialog({
         >
           {activeDialog.kind === 'bag' ? (
             <ShoppingBag
+              onCheckout={() => {
+                clearNotification()
+                beginCheckout()
+              }}
+              focusOnMount={activeDialog.focusOnMount}
               snapshot={snapshot}
               onQuantity={changeQuantity}
               onRemove={removeProduct}
@@ -62,6 +81,17 @@ export default function StorefrontDialog({
               }}
               onContinue={continueShopping}
               onRetry={actions.loadCatalog}
+            />
+          ) : activeDialog.kind === 'checkout' ? (
+            <CheckoutForm
+              order={checkoutOrder(snapshot)}
+              onBack={backToBag}
+              onConfirm={confirmCheckout}
+            />
+          ) : activeDialog.kind === 'confirmation' ? (
+            <DemoOrderConfirmation
+              order={activeDialog.order}
+              onContinue={continueShopping}
             />
           ) : selectedProduct ? (
             <ProductDetails
