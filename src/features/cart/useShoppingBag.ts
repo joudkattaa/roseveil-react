@@ -20,6 +20,7 @@ export function useShoppingBag(
   notify: (message: string) => void,
   headingRef: RefObject<HTMLHeadingElement | null>,
 ) {
+  const [bagFeedback, setBagFeedback] = useState(0)
   const [activeDialog, setActiveDialog] = useState<ActiveDialog>(null)
   const selectedProduct =
     activeDialog?.kind === 'product'
@@ -33,6 +34,7 @@ export function useShoppingBag(
       return
     }
     const added = actions.addProduct(id)
+    if (added) setBagFeedback((current) => current + 1)
     notify(
       added
         ? product.name + ' added to your bag.'
@@ -83,6 +85,7 @@ export function useShoppingBag(
     actions.clearCart()
   }
   return {
+    bagFeedback,
     beginCheckout,
     backToBag,
     confirmCheckout,

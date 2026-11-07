@@ -11,6 +11,7 @@ import ThemeToggle from '../../features/theme/ThemeToggle.tsx'
 import type { Theme } from '../../modules/state/state.types.ts'
 
 interface SiteHeaderProps {
+  bagFeedback: number
   theme: Theme
   onToggleTheme: () => void
   bagCount: number
@@ -26,6 +27,7 @@ interface SiteHeaderProps {
 }
 
 export default function SiteHeader({
+  bagFeedback,
   theme,
   onToggleTheme,
   bagCount,
@@ -196,10 +198,22 @@ export default function SiteHeader({
             aria-haspopup="dialog"
             aria-label={`Open shopping bag, ${bagCount} items`}
           >
-            <svg aria-hidden="true">
+            <svg
+              key={'bag-icon-' + bagFeedback}
+              className="bag-icon-feedback"
+              data-added={bagFeedback > 0}
+              aria-hidden="true"
+            >
               <use href="#i-bag" />
             </svg>
-            <span aria-hidden="true">{bagCount}</span>
+            <span
+              key={'bag-count-' + bagFeedback}
+              className="bag-count-feedback"
+              data-added={bagFeedback > 0}
+              aria-hidden="true"
+            >
+              {bagCount}
+            </span>
           </button>
         </div>
       </div>

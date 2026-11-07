@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 
+import { useScrollReveal } from '../../shared/motion/useScrollReveal.ts'
+
 interface SiteLayoutProps {
   children: ReactNode
   header: ReactNode
@@ -11,6 +13,7 @@ export default function SiteLayout({
   header,
   footer,
 }: SiteLayoutProps) {
+  const mainRef = useScrollReveal()
   return (
     <>
       <svg
@@ -94,7 +97,7 @@ export default function SiteLayout({
         Skip to content
       </a>
       {header}
-      <main id="main" tabIndex={-1}>
+      <main ref={mainRef} id="main" tabIndex={-1}>
         {children}
       </main>
       {footer}

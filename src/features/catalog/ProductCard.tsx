@@ -2,6 +2,8 @@ import type { Product } from '../../modules/products/products.types.ts'
 import { formatMoney } from '../../logic.ts'
 import ProductImage from './ProductImage.tsx'
 
+import { secondaryImages } from './secondaryImages.ts'
+
 interface ProductCardProps {
   product: Readonly<Product>
   onAdd: (id: string) => void
@@ -21,7 +23,10 @@ export default function ProductCard({
         aria-label={`View ${product.name}`}
         onClick={() => onDetails(product.id)}
       >
-        <ProductImage product={product} />
+        <ProductImage
+          product={product}
+          secondaryImage={secondaryImages[product.id]}
+        />
       </button>
       <div className="product-info">
         <p className="product-category">{product.category}</p>

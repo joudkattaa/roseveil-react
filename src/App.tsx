@@ -57,6 +57,7 @@ export default function App() {
               theme={snapshot.theme}
               onToggleTheme={toggleTheme}
               bagCount={bagCount}
+              bagFeedback={bag.bagFeedback}
               onOpenBag={() => setActiveDialog({ kind: 'bag' })}
               items={navigationItems}
               activeId={activeId}
