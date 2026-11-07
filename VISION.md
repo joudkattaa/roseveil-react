@@ -32,7 +32,7 @@ I also imagined some products moving gently up and down, and small parallax effe
 
 For the shopping bag, I wanted smooth feedback when adding a product.
 
-These are ideas I would like to complete later. I didn't want to add too many animations that could make the website slow or distracting.
+I added gentle scroll effects, but chose to keep product cards still until hover or keyboard focus. Parallax is still an idea for later. I did not want too many animations that could make the website slow or distracting.
 
 ## React Development
 
@@ -50,9 +50,9 @@ The product catalog, API, search, filtering, sorting, shopping bag, and product 
 
 I also added small hover effects to the product cards, including a gentle lift, image zoom, and soft shadow.
 
-The original dark colors and styling are preserved, but switching between light and dark mode is not working yet.
+I kept the soft pink and beige light theme and the burgundy and rose-gold dark theme. I added a working theme button in the header, and my choice is saved after refresh.
 
-The more advanced Hero, floating, scrolling, and parallax animations are still ideas for future improvements.
+I added a visible entrance for the four original Hero products, subtle hover and focus effects for cards, one-time scroll reveals and small shopping bag feedback. I reused the original transparent product layers and marble/floral stage, with the original complete photo as a fallback. The products enter again whenever I scroll fully away from the Hero and return. Parallax remains an idea for later. Image swapping is ready for real second photos, but none are available yet.
 
 ## My Goal
 
