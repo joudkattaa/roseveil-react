@@ -12,54 +12,68 @@ My main idea was to make the website feel more luxurious, with smooth movements 
 
 I wanted to keep the original Hero design with the marble background, flowers, vase, and cosmetic products.
 
-But instead of having everything appear at once, I imagined the products entering one by one with a smooth animation and stopping in their original positions.
+But instead of having everything appear at once, I wanted the four products to enter one by one with a smooth animation and stop in their original positions.
 
-I wanted the Hero to look more interesting without changing its design.
+I used the original product images and background to keep the same design. The Hero animation also plays again when I scroll away from the section and return to it.
 
 ## Product Cards
 
-I wanted the product cards to be more interactive.
+I wanted the product cards to be more interactive without making the website too busy.
 
-For example, when someone moves the mouse over a product, I wanted the card to move up a little, the image to zoom in smoothly, and a soft shadow to appear.
+When someone moves the mouse over a product, the card moves up a little, the image zooms in smoothly, and a soft shadow appears. When the mouse leaves, the card returns to its original position.
 
-I also liked the idea of showing a second photo of the same product on hover. Since I don't have second photos for the products yet, I kept the original images and used simple hover effects instead.
+I also wanted keyboard users to get similar feedback when focusing on a card.
+
+I liked the idea of showing a second photo of the same product on hover. Since I don't have second photos yet, I kept the original product images. The image-switching feature is ready for when I add them.
 
 ## Other Animations
 
-I wanted the sections to appear smoothly while scrolling down the page.
+I wanted sections to appear smoothly while scrolling down the page.
 
-I also imagined some products moving gently up and down, and small parallax effects to give the website more depth.
+I added gentle scroll effects and small shopping bag feedback animations. I decided not to use continuous floating animations for the product cards because I preferred a cleaner design.
 
-For the shopping bag, I wanted smooth feedback when adding a product.
+I also thought about adding parallax effects, but I decided to leave that idea for later.
 
-I added gentle scroll effects, but chose to keep product cards still until hover or keyboard focus. Parallax is still an idea for later. I did not want too many animations that could make the website slow or distracting.
+I wanted the animations to make the website feel elegant without becoming distracting or slowing it down.
 
 ## React Development
 
-I wanted to rebuild my original ROSEVEIL website using React and TypeScript while keeping the same product data and shopping functionality.
+I rebuilt my original ROSEVEIL website using React and TypeScript while keeping the original product data and shopping logic.
 
 I wanted the search, categories, sorting, shopping bag, and product details to work as they did in my original project.
 
-I also wanted the website to work well on mobile and desktop.
+I also turned the website into a multi-page React application using React Router.
+
+The website now has separate pages for Home, Shop, Product Details, About, Shopping Bag, and Checkout, with shared navigation and a 404 page.
+
+I wanted the shopping bag to stay the same across all pages and keep its products after refreshing the website.
+
+I also wanted the website to work well on both mobile and desktop.
 
 ## What I Completed
 
-I rebuilt the main website sections using React components.
+I rebuilt the website using reusable React components and organized the code by feature.
 
-The product catalog, API, search, filtering, sorting, shopping bag, and product details are implemented.
+I connected the product catalog to the API and implemented search, category filtering, sorting, and individual product pages.
 
-I also added small hover effects to the product cards, including a gentle lift, image zoom, and soft shadow.
+I kept the shopping bag working across all pages using React Context. Users can add products, change quantities, remove items, and apply the GLOW20 discount.
 
-I kept the soft pink and beige light theme and the burgundy and rose-gold dark theme. I added a working theme button in the header, and my choice is saved after refresh.
+I added a demo checkout using React Hook Form, Zod, and shadcn/ui to validate customer information. It is only a demonstration and does not process real payments or place real orders.
 
-I added a visible entrance for the four original Hero products, subtle hover and focus effects for cards, one-time scroll reveals and small shopping bag feedback. I reused the original transparent product layers and marble/floral stage, with the original complete photo as a fallback. The products enter again whenever I scroll fully away from the Hero and return. Parallax remains an idea for later. Image swapping is ready for real second photos, but none are available yet.
+I kept the soft pink and beige light theme and the burgundy and rose-gold dark theme. I also added a theme button that saves the selected mode after refresh.
+
+I added the four-product Hero entrance animation, subtle product card hover effects, scroll reveals, and shopping bag feedback.
+
+I also added loading messages, error recovery, and empty states so the website remains understandable when product data is delayed, unavailable, or empty.
+
+I kept the original design and product images instead of replacing them with a completely different style.
 
 ## My Goal
 
-My goal was not to create a completely different website. I wanted to improve the ROSEVEIL project I already made.
+My goal was not to create a completely different website. I wanted to improve the ROSEVEIL project I had already made.
 
 I wanted it to feel elegant, modern, and easy to use, with beautiful product images and smooth interactions.
 
-I also wanted to keep the website accessible, including keyboard support and reduced-motion preferences.
+I also wanted to keep the website accessible, including keyboard support, responsive layouts, and reduced-motion preferences.
 
 For me, the most important thing was to keep my original design and make it better using React.

@@ -1,4 +1,4 @@
-# ROSEVEIL Cosmetics — React Day 4
+# ROSEVEIL Cosmetics — React Task 5
 
 A Vite + React + TypeScript migration of the original ROSEVEIL concept storefront. The original ShopBoard project is read-only. This repository preserves all nine Day 3 modules from commit 731aaf7 without modification.
 
@@ -19,6 +19,10 @@ Original header, hero, benefits/ribbon, categories, About expansion, Beauty Phil
 
 Account/contact/policy dialogs and parallax remain unavailable. Sequential original Hero layers, subtle card hover/focus feedback, one-time section reveal and bag feedback are implemented. The header has a keyboard-accessible Light/Dark toggle using the original soft pink/beige and burgundy/rose-gold styles. No payment, real order, personal-data storage or email delivery occurs.
 
+## Design vision
+
+I kept my original ROSEVEIL identity: soft pink and beige, rose-gold accents, burgundy Dark Mode, elegant typography and original product photography. My goal was to improve the existing storefront rather than redesign it. The original Hero artwork, gentle motion, responsive layouts and accessibility remain important. My full personal design explanation is in [VISION.md](VISION.md).
+
 ## Components and ownership
 
 ### Actual React component tree
@@ -35,9 +39,12 @@ StrictMode
                 |   |-- header slot: AnnouncementBar, SiteHeader
                 |   |   `-- SiteHeader: MainNavigation, SearchField, ThemeToggle
                 |   |-- main: Suspense > Outlet > LazyPage > ErrorBoundary (one page below)
-                |   |   |-- HomePage: HeroSection, CategorySection, AboutSection,
-                |   |   |   ErrorBoundary > CatalogSection, BeautyPromise (original section order)
-                |   |   |   `-- HeroSection: HeroArtwork, Benefits/Ribbon DOM markup
+                |   |   |-- HomePage (original section order)
+                |   |   |   |-- HeroSection > HeroArtwork; Benefits/Ribbon DOM markup
+                |   |   |   |-- CategorySection
+                |   |   |   |-- AboutSection
+                |   |   |   |-- ErrorBoundary > CatalogSection
+                |   |   |   `-- BeautyPromise
                 |   |   |-- ShopPage: PageFrame > ErrorBoundary > CatalogSection
                 |   |   |-- ProductDetailsPage: PageFrame > ProductDetails > ProductImage (larger detail artwork)
                 |   |   |-- AboutPage: PageFrame > AboutSection, BeautyPromise
@@ -95,7 +102,7 @@ Development-only /delay/3000, /fail/500 and /empty routes render ShopPage for th
 - src/shared/ui contains Dialog, Toast and notification state shared across features. ProductImage remains in catalog and is reused by cart.
 - src/components retains the existing layout, hero, editorial and newsletter components. Protected Day 3 modules retain their original paths.
 
-The original migration commit is retained; Git history has not been rewritten.
+AGENTS.md is the single project rules file for Codex. Both required Vercel skills and their supporting reference files remain under .claude/skills/.
 
 ### State ownership and responsibilities
 
@@ -624,10 +631,10 @@ Step 5 tests cover real HTTP three-second timing and literal endpoint statuses/m
 
 Development-only URLs: ?api-delay=1000, ?api-error=500, ?api-empty=1. Forced failures remain forced during Retry; automated recovery tests replace a failing response with success in the same mounted app. Preview/production ignore simulations.
 
-All five official ShopBoard Debug Lab bugs were reproduced and their fixes verified using React and jsdom with AI assistance from Codex. See debug-lab-log.md for the observations, causes, fixes and verification. Personal Chrome/React DevTools verification remains incomplete; no manual browser testing is claimed. These lab checks are separate from the project's automated test suite.
+The student reviewed and tried the fixes for all five official ShopBoard Debug Lab bugs with Codex's help. Codex also ran automated React/jsdom tests to check the fixes. See debug-lab-log.md for the exercise observations, causes, fixes and verification. The student's use of Chrome or React DevTools for these exercises has not been verified and is not claimed. These lab checks are separate from the project's automated test suite.
 
 ## Tooling
 
-Final local verification: typecheck, zero-warning lint, build, formatting check and all 107 tests across 21 suites passed. The nine protected modules and original assets match their verified baseline. The student reports successful browser checks for routing, Home/Shop navigation, and the shared bag/checkout flow. Native screen-reader behavior remains unverified. Installation used legacy peer resolution; `npm ls --depth=0` completed successfully and the suite ran with React 19.3.1, Vite 8.3.5, Vitest 4.1.12 and jsdom 26.1.0. npm also resolved existing development tools to plugin-react 6.2.1 and Oxlint 1.91.0 within their existing declared ranges. Routing uses React Router 7.18.5. Checkout uses react-hook-form 7.91.0, zod 4.6.7 and @hookform/resolvers 5.9.2. Official shadcn Field support uses @radix-ui/react-label 2.1.17, class-variance-authority 0.7.1, clsx 2.1.1 and tailwind-merge 3.7.0.
+The final submission review passed typecheck, zero-warning lint, build and all 107 tests across 21 suites. Its formatting check initially failed because debug-lab-log.md had an extra blank line at EOF; that blank line has been removed. After these documentation corrections, the formatting check passed. The nine protected modules were verified byte-for-byte against commit 731aaf7. Original assets retain their previously verified baseline status. The student reports successful browser checks for routing, Home/Shop navigation, and the shared bag/checkout flow. Native screen-reader behavior remains unverified. Installation used legacy peer resolution; `npm ls --depth=0` completed successfully and the suite ran with React 19.3.1, Vite 8.3.5, Vitest 4.1.12 and jsdom 26.1.0. npm also resolved existing development tools to plugin-react 6.2.1 and Oxlint 1.91.0 within their existing declared ranges. Routing uses React Router 7.18.5. Checkout uses react-hook-form 7.91.0, zod 4.6.7 and @hookform/resolvers 5.9.2. Official shadcn Field support uses @radix-ui/react-label 2.1.17, class-variance-authority 0.7.1, clsx 2.1.1 and tailwind-merge 3.7.0.
 
 Prettier, Oxlint, Husky and lint-staged are configured. Exact protected paths are excluded from formatting and staged writers. The two instructor-required Vercel React skills are under .claude/skills; Vite-applicable rules were applied.

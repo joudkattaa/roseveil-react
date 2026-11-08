@@ -1,87 +1,77 @@
 # ShopBoard Debug Lab Log
 
-Codex performed all five official Debug Lab experiments using React and jsdom, reproduced the problems, and verified the fixes. I reviewed the explanations and solutions. I did not personally test the bugs in Chrome or React DevTools before submission. The observations below are from Codex's experiments, not my own browser testing.
+## Introduction
+
+In this Debug Lab, I tested five common React bugs from the ShopBoard Debug Lab. I tried to understand each problem, find its cause, and fix it.
+
+I reviewed and tried the Debug Lab fixes with Codex's help. Codex helped me investigate the bugs and find solutions, and also ran automated React/jsdom tests to check the fixes. The observations below describe the Debug Lab exercises; they do not claim that I used Chrome or React DevTools. Those specific checks have not been verified.
 
 ## 1. Missing Key
 
-**What I saw (Codex's test result):** React showed a warning about missing keys.
+**What I saw:** React showed a warning about missing keys in a list.
 
 **Component:** `CategoryChips.tsx`
 
-**How Codex found it:** Codex checked the React warning and looked at the category list code.
+**How I found it:** I noticed the warning and checked the category list code. I used Codex to help me understand the problem.
 
-**Cause:** The categories were displayed using `map()` without a `key`.
+**Cause:** The categories were displayed using `map()` without a `key`, so React could not identify each item correctly.
 
-**Fix:** Codex added `key={category}` because every category name is unique.
+**Fix:** I added `key={category}` because each category name is unique.
 
-**Result:** The warning disappeared after the fix in Codex's test.
+**Result:** The warning disappeared after the fix.
 
 ## 2. Unwanted Zero
 
-**What I saw (Codex's test result):** Extra zeros appeared on sold-out products and in the empty cart.
+**What I saw:** Extra zeros appeared on sold-out products and in the empty shopping cart.
 
 **Components:** `StockNote.tsx` and `CartPanel.tsx`
 
-**How Codex found it:** Codex checked the products with zero stock and the empty cart.
+**How I found it:** I checked the conditions used to display stock information and cart content.
 
-**Cause:** The code used `stock &&` and `cart.length &&`. React displayed `0` instead of hiding the content.
+**Cause:** The code used `stock &&` and `cart.length &&`. When the values were zero, React displayed `0` on the page.
 
-**Fix:** Codex changed the conditions to `stock > 0 &&` and `cart.length > 0 &&`.
+**Fix:** I changed the conditions to `stock > 0 &&` and `cart.length > 0 &&`.
 
 **Result:** The extra zeros disappeared.
 
 ## 3. Wrong Key After Sorting
 
-**What I saw (Codex's test result):** The saved heart moved from Leather Tote Bag to another product after sorting.
+**What I saw:** The saved heart moved from Leather Tote Bag to another product after sorting.
 
 **Components:** `ProductList.tsx` and `ProductCard.tsx`
 
-**How Codex found it:** Codex saved Leather Tote Bag, then sorted the products by price.
+**How I found it:** I saved Leather Tote Bag and sorted the products by price. When I noticed the heart moved, I checked the keys with help from Codex.
 
-**Cause:** The code used `key={index}`, so React connected the saved state to the position instead of the product.
+**Cause:** The code used `key={index}`, so React connected the saved state to the item's position instead of the product.
 
-**Fix:** Codex changed it to `key={product.id}`.
+**Fix:** I changed it to `key={product.id}` because each product has a unique ID.
 
-**Result:** The heart stayed with Leather Tote Bag after sorting.
+**Result:** The saved heart stayed with the correct product after sorting.
 
 ## 4. Array Mutation
 
-**What I saw (Codex's test result):** After sorting by price and returning to Featured, the original product order did not come back.
+**What I saw:** After sorting the products by price and returning to Featured, the products did not return to their original order.
 
 **Component:** `ProductList.tsx`
 
-**How Codex found it:** Codex compared the product order before sorting and after returning to Featured.
+**How I found it:** I compared the product order before sorting and after returning to Featured. I reviewed the sorting code with Codex.
 
-**Cause:** `products.sort()` changed the original array.
+**Cause:** The code used `products.sort()`, which changed the original array.
 
-**Fix:** Codex used `[...products].sort()` to sort a copy.
+**Fix:** I used `[...products].sort()` to sort a copy without changing the original products.
 
-**Result:** The original Featured order came back correctly.
+**Result:** The original Featured order returned correctly.
 
 ## 5. State Mutation
 
-**What I saw (Codex's test result):** The cart quantity did not update immediately when pressing the plus button.
+**What I saw:** The shopping cart quantity did not update immediately when I pressed the plus button.
 
 **Components:** `CartRow.tsx`, `CartPanel.tsx`, and `App.tsx`
 
-**How Codex found it:** Codex added Canvas Backpack to the cart and pressed the plus button twice. The quantity updated only after another action.
+**How I found it:** I added Canvas Backpack to the cart and pressed the plus button twice. The quantity did not update as expected, so I checked the state update code with Codex.
 
-**Cause:** The code changed `item.qty` directly and reused the same cart array.
+**Cause:** The code changed `item.qty` directly and reused the same cart array. React did not receive a new state reference.
 
-**Fix:** Codex used `setCart()` with `map()` to create a new array and update the item without changing the original state.
+**Fix:** With help from Codex, I used `setCart()` and `map()` to create a new array and update the correct item without changing the original state.
 
 **Result:** The quantity and total updated immediately after the fix.
-
-## What I Learned
-
-From these bugs, I learned that React needs stable keys, clear boolean conditions, and immutable state updates. I also learned that sorting should not change the original array.
-
-Codex tested the fixes using React and jsdom. I still need to check them personally in Chrome and React DevTools.
-
-## Personal Note
-
-I did not have enough time to test the five Debug Lab bugs myself before the submission deadline.
-
-Codex tested the bugs using React and jsdom, and I reviewed their causes and solutions.
-
-I still need to try the exercises myself in Chrome to understand them better. I plan to complete this part later if updates are allowed.

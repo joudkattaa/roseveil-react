@@ -279,7 +279,7 @@
 :root[data-theme='dark'] :is(.cart-line, .quantity, .cart-totals .grand-total) {
   border-color: var(--theme-border);
 }
-:root[data-theme='dark'] :is(.modal-product small, .cart-demo, .remove-line) {
+:root[data-theme='dark'] :is(.cart-demo, .remove-line) {
   color: var(--theme-text);
 }
 :root[data-theme='dark'] :is(.promo-form input, .button.secondary) {

@@ -8,11 +8,9 @@ coverage/
 *.tsbuildinfo
 package-lock.json
 
-# Planning documents are outside this tooling task's formatting scope.
+# Project rules and the personal vision stay outside automatic formatting.
 AGENTS.md
-CLAUDE.md
 VISION.md
-MIGRATION_PLAN.md
 
 # Protected Day 3 baseline: never automatically format these files.
 src/logic.ts

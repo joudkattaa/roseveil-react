@@ -779,24 +779,6 @@
     color: var(--rose-dark);
   }
 }
-
-.cart-button {
-  position: relative;
-}
-.cart-button > span {
-  position: absolute;
-  right: 0;
-  top: 0;
-  background: var(--rose);
-  color: white;
-  min-width: 15px;
-  height: 15px;
-  padding: 0 3px;
-  border-radius: 50%;
-  font-size: 8px;
-  display: grid;
-  place-items: center;
-}
 .menu-toggle {
   order: 3;
   width: 100%;
@@ -809,9 +791,6 @@
   order: 4;
   flex-direction: column;
   gap: 0;
-}
-.main-nav.is-open {
-  display: flex;
 }
 .main-nav > a,
 .main-nav > button {
@@ -1042,13 +1021,6 @@
     order: 2;
     flex-shrink: 0;
   }
-}
-
-.header-availability {
-  font-size: 11px;
-  line-height: 1.6;
-  color: var(--muted);
-  padding-block: 0 10px;
 }
 .site-header .header-inner,
 .site-header nav {
@@ -1837,7 +1809,6 @@
   form,
   .header-inner,
   .footer-grid > *,
-  .modal-product > *,
   .cart-line > *
 ) {
   min-width: 0;
@@ -1848,8 +1819,6 @@
   select,
   .catalog-popup input,
   .catalog-popup select,
-  .form-stack input,
-  .form-stack textarea,
   .newsletter input,
   .promo-form .search-row input
 ) {
@@ -2839,34 +2808,6 @@ dialog::backdrop {
   font-size: 13px;
   color: var(--muted);
 }
-.modal-product {
-  display: grid;
-  gap: 22px;
-}
-.modal-product > img {
-  width: 100%;
-  max-width: 260px;
-  height: clamp(160px, 32dvh, 260px);
-  object-fit: contain;
-  justify-self: center;
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-}
-.modal-product > div {
-  min-width: 0;
-}
-.modal-product .modal-price {
-  font-size: 22px;
-  color: var(--ink);
-  margin: 12px 0;
-}
-.modal-product small {
-  font-size: 10px;
-  display: block;
-  margin-top: 14px;
-  color: #725960;
-}
 .form-status {
   font-size: 12px;
   margin-top: 12px;
@@ -2955,18 +2896,6 @@ dialog::backdrop {
   color: #725960;
   margin-block: 18px;
 }
-.shipping-progress {
-  height: 4px;
-  background: #ddc9c6;
-  margin-top: 9px;
-  border-radius: 3px;
-  overflow: hidden;
-}
-.shipping-progress > span {
-  height: 100%;
-  display: block;
-  background: var(--rose);
-}
 .promo-form label {
   font-size: 10px;
   display: block;
@@ -3004,12 +2933,6 @@ dialog::backdrop {
   text-align: center;
   margin-top: 10px;
   color: #725960;
-}
-@media (min-width: 600px) {
-  .modal-product {
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-    align-items: center;
-  }
 }
 .cart-clear {
   display: flex;
@@ -3052,16 +2975,6 @@ dialog {
 }
 .dialog-header h2 {
   font-size: 30px;
-}
-.modal-product {
-  gap: 24px;
-}
-.modal-product > img {
-  max-width: 280px;
-  height: clamp(160px, 30dvh, 280px);
-}
-.modal-product small {
-  font-size: 12px;
 }
 .quantity button {
   width: 44px;
@@ -3121,11 +3034,6 @@ dialog {
   .cart-line > div:last-child {
     grid-column: auto;
     display: block;
-  }
-}
-@media (min-width: 600px) {
-  .modal-product {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   }
 }
 .promo-form input {
