@@ -36,51 +36,114 @@ My aim is to improve my original design while keeping it recognizable. See [VISI
 
 ## React component tree
 
-The shared layout stays mounted while the selected page changes. Repeated names below are reused components.
-Benefits and the ribbon are markup inside HeroSection, rather than separate components.
+App is the top of the application tree. The actual runtime wrappers in src/main.tsx sit above it:
 
 ```text
-StrictMode
-+-- StorefrontProvider
-    +-- BrowserRouter
-        +-- App (Routes)
-            +-- HomeCatalogProvider
-                +-- RootLayout
-                    +-- SiteLayout
-                    |   +-- header slot
-                    |   |   +-- AnnouncementBar
-                    |   |   +-- SiteHeader
-                    |   |       +-- MainNavigation
-                    |   |       +-- SearchField
-                    |   |       +-- ThemeToggle
-                    |   +-- main: Suspense > Outlet > LazyPage > ErrorBoundary
-                    |   |   +-- HomePage
-                    |   |   |   +-- HeroSection > HeroArtwork
-                    |   |   |   +-- CategorySection
-                    |   |   |   +-- AboutSection
-                    |   |   |   +-- ErrorBoundary > CatalogSection
-                    |   |   |   +-- BeautyPromise
-                    |   |   +-- ShopPage > PageFrame > ErrorBoundary > CatalogSection
-                    |   |   +-- ProductDetailsPage > PageFrame > ProductDetails > ProductImage
-                    |   |   +-- AboutPage > PageFrame > AboutSection, BeautyPromise
-                    |   |   +-- BagPage > PageFrame > ShoppingBag
-                    |   |   +-- CheckoutPage > PageFrame > CheckoutForm or DemoOrderConfirmation
-                    |   |   +-- NotFoundPage > PageFrame
-                    |   +-- footer slot: SiteFooter > NewsletterForm
-                    +-- StorefrontDialog > Dialog > ShoppingBag (quick bag)
-                    +-- Toast
-
-CatalogSection > CatalogControls > SearchField
-               > CatalogStatus
-               > ProductGrid > ProductCard > ProductImage
-ShoppingBag > CartRow > ProductImage; PromoForm
-CheckoutForm > OrderSummary; Controller > Field > FieldLabel > Label
-                                             > input / textarea; FieldError
-DemoOrderConfirmation > OrderSummary
+StrictMode (React; children)
+  StorefrontProvider [src/features/storefront/StorefrontProvider.tsx] | props: { children: ReactNode }
+    BrowserRouter (React Router; children)
+      App (application tree below)
 ```
 
-CheckoutPage shows empty-bag feedback when needed. The quick bag mounts only when opened.
-Reusable components use named, typed Props interfaces in their own source files.
+Each local component has its source path and actual prop types below. Repeated appearances use the same
+contract; shorter repeated entries identify the props supplied there. ? marks optional props.
+key is React metadata, not a component prop. Indentation shows parent/child relationships and ReactNode slots.
+Route alternatives and conditional branches are labelled; they do not all mount together.
+Shared branches are expanded once below. React, React Router, React Hook Form and Radix infrastructure is labelled;
+ordinary HTML and repeated Link/NavLink elements are not expanded.
+StorefrontProvider supplies StorefrontContext with value={adapter}; HomeCatalogProvider supplies HomeCatalogContext with value={catalog}.
+
+```text
+App [src/App.tsx] | props: none
+  Routes / Route (React Router selects a route)
+    HomeCatalogProvider [src/features/catalog/HomeCatalogProvider.tsx] | props: { children: ReactNode }
+      RootLayout [src/components/layout/RootLayout.tsx] | props: none
+        SiteLayout [src/components/layout/SiteLayout.tsx] | props: { children: ReactNode; header: ReactNode; footer: ReactNode }
+          header slot
+            AnnouncementBar [src/components/layout/AnnouncementBar.tsx] | props: { onCopyCode: () => Promise<void> }
+            SiteHeader [src/components/layout/SiteHeader.tsx] | props: { bagIsDialog?: boolean; bagFeedback: number; theme: Theme; onToggleTheme: () => void; bagCount: number; onOpenBag: () => void; items: readonly NavigationItem[]; activeId: NavigationId | undefined; unavailableMessage: string; query: string; onQueryChange: (value: string) => void; onSearchSubmit: () => void; onCategoryChange: (value: Category | 'All') => void; onHome: () => void }
+              MainNavigation [src/components/layout/MainNavigation.tsx] | props: { open: boolean; items: readonly NavigationItem[]; activeId: NavigationId | undefined; onNavigate: () => void; onCategoryChange: (value: Category | 'All') => void; onHome: () => void; navigationRef: Ref<HTMLElement> }
+              ThemeToggle [src/features/theme/ThemeToggle.tsx] | props: { theme: Theme; onToggle: () => void }
+              SearchField [src/features/catalog/SearchField.tsx] | props: { children?: ReactNode; id: string; label: string; value: string; placeholder: string; inputRef?: Ref<HTMLInputElement>; onChange: (value: string) => void }
+          children slot: main > Suspense > Outlet
+            LazyPage [src/shared/ui/LazyPage.tsx] | props: { initial: LazyExoticComponent<ComponentType>; load: () => Promise<{ default: ComponentType }> }
+              ErrorBoundary [src/shared/ui/ErrorBoundary.tsx] | props: { children: ReactNode; label: string; onRetry?: () => void }
+                selected page (one of these alternatives)
+                  HomePage [src/pages/HomePage.tsx] | props: none
+                    HeroSection [src/components/hero/HeroSection.tsx] | props: { onExplore: () => void }
+                      HeroArtwork [src/components/hero/HeroArtwork.tsx] | props: { accessibleLabel: string }
+                    CategorySection [src/components/editorial/CategorySection.tsx] | props: { category: Category | 'All' | null; onSelect: (category: Category) => void }
+                    AboutSection [src/components/editorial/AboutSection.tsx] | props: { storyId: string }
+                    ErrorBoundary (label="The product collection", children)
+                      CatalogSection [src/features/catalog/CatalogSection.tsx] | props: { onShopAll: () => void; onAdd: (id: string) => void; products: readonly Readonly<Product>[]; phase: CatalogPhase; catalogEmpty: boolean; filters: CatalogFilters; onFiltersChange: (value: CatalogFilters) => void; onCategoryChange: (value: Category | 'All') => void; onRetry: () => Promise<void>; onReset: () => void; onToggleFeatured: () => void; headingRef: RefObject<HTMLHeadingElement | null> } (catalog branch below)
+                    BeautyPromise [src/components/editorial/BeautyPromise.tsx] | props: { headingId: string }
+                  ShopPage [src/pages/ShopPage.tsx] | props: none
+                    PageFrame [src/shared/ui/PageFrame.tsx] | props: { title: string; children: ReactNode; width?: 'contained' | 'full' }
+                      ErrorBoundary (label="The product collection", children)
+                        CatalogSection (catalog branch below)
+                  ProductDetailsPage [src/pages/ProductDetailsPage.tsx] | props: none
+                    PageFrame (title, children)
+                      ProductDetails [src/features/catalog/ProductDetails.tsx] | props: { product: Readonly<Product>; available: boolean; onAdd: (id: string) => void } (when product data exists)
+                        ProductImage [src/features/catalog/ProductImage.tsx] | props: { secondaryImage?: string; product: Readonly<Product>; variant?: 'card' | 'detail' | 'cart' } (product, variant="detail")
+                  AboutPage [src/pages/AboutPage.tsx] | props: none
+                    PageFrame (title, width="full", children)
+                      AboutSection (storyId)
+                      BeautyPromise (headingId)
+                  BagPage [src/pages/BagPage.tsx] | props: none
+                    PageFrame (title, children)
+                      ShoppingBag [src/features/cart/ShoppingBag.tsx] | props: { onCheckout: () => void; snapshot: StorefrontSnapshot; onQuantity: (id: string, delta: number) => void; onRemove: (id: string) => void; onClear: () => void; onPromo: (code: string) => void; onContinue: () => void; onRetry: () => Promise<void> } (bag branch below)
+                  CheckoutPage [src/pages/CheckoutPage.tsx] | props: none
+                    PageFrame (title, children)
+                      CheckoutForm [src/features/checkout/CheckoutForm.tsx] | props: { order: DemoOrder | null; onBack: () => void; onConfirm: () => void } (unconfirmed, nonempty bag; checkout branch below)
+                      DemoOrderConfirmation [src/features/checkout/DemoOrderConfirmation.tsx] | props: { order: DemoOrder; onContinue: () => void } (confirmed; confirmation branch below)
+                      empty-bag message and Link (otherwise)
+                  NotFoundPage [src/pages/NotFoundPage.tsx] | props: none
+                    PageFrame (title, children)
+          footer slot
+            SiteFooter [src/components/layout/SiteFooter.tsx] | props: { unavailableMessage: string; onHome: () => void; onShop: () => void }
+              NewsletterForm [src/components/forms/NewsletterForm.tsx] | props: { confirmationMessage: string }
+        StorefrontDialog [src/features/cart/StorefrontDialog.tsx] | props: { onCheckout: () => void; activeDialog: ActiveDialog; setActiveDialog: (value: ActiveDialog) => void; snapshot: StorefrontSnapshot; actions: StorefrontAdapter['actions']; notification: { message: string; revision: number }; changeQuantity: (id: string, delta: number) => void; removeProduct: (id: string) => void; clearBag: () => void; clearNotification: () => void; continueShopping: () => void }
+          Dialog [src/shared/ui/Dialog.tsx] | props: { title: string; onClose: () => void; children: ReactNode } (only while activeDialog is set)
+            ShoppingBag (bag branch below)
+        Toast [src/shared/ui/Toast.tsx] | props: { message: string; announcementId: number }
+
+Catalog branch (HomePage and ShopPage):
+CatalogSection [src/features/catalog/CatalogSection.tsx] | props: { onShopAll: () => void; onAdd: (id: string) => void; products: readonly Readonly<Product>[]; phase: CatalogPhase; catalogEmpty: boolean; filters: CatalogFilters; onFiltersChange: (value: CatalogFilters) => void; onCategoryChange: (value: Category | 'All') => void; onRetry: () => Promise<void>; onReset: () => void; onToggleFeatured: () => void; headingRef: RefObject<HTMLHeadingElement | null> }
+  CatalogControls [src/features/catalog/CatalogControls.tsx] | props: { filters: CatalogFilters; onChange: (filters: CatalogFilters) => void }
+    SearchField (id, label, value, placeholder, onChange)
+  CatalogStatus [src/features/catalog/CatalogStatus.tsx] | props: { resultCount: number; category: Category | 'All'; onReset: () => void; retryRef: Ref<HTMLButtonElement>; phase: CatalogPhase; catalogEmpty: boolean; onRetry: () => Promise<void> }
+  ProductGrid [src/features/catalog/ProductGrid.tsx] | props: { products: readonly Readonly<Product>[]; onAdd: (id: string) => void }
+    ProductCard [src/features/catalog/ProductCard.tsx] | props: { product: Readonly<Product>; onAdd: (id: string) => void } (one per product)
+      ProductImage [src/features/catalog/ProductImage.tsx] | props: { secondaryImage?: string; product: Readonly<Product>; variant?: 'card' | 'detail' | 'cart' }
+
+Bag branch (BagPage or StorefrontDialog > Dialog):
+ShoppingBag [src/features/cart/ShoppingBag.tsx] | props: { onCheckout: () => void; snapshot: StorefrontSnapshot; onQuantity: (id: string, delta: number) => void; onRemove: (id: string) => void; onClear: () => void; onPromo: (code: string) => void; onContinue: () => void; onRetry: () => Promise<void> }
+  CartRow [src/features/cart/CartRow.tsx] | props: { id: string; product: Readonly<Product> | undefined; quantity: number; pricesAvailable: boolean; onQuantity: (id: string, delta: number) => void; onRemove: (id: string) => void; onRowRemoved: () => void } (one per saved item, when nonempty)
+    ProductImage (product, variant="cart"; only when product data exists)
+  PromoForm [src/features/cart/PromoForm.tsx] | props: { appliedCode: string; onApply: (value: string) => void } (when nonempty)
+
+Checkout branch (CheckoutPage):
+CheckoutForm [src/features/checkout/CheckoutForm.tsx] | props: { order: DemoOrder | null; onBack: () => void; onConfirm: () => void }
+  OrderSummary [src/features/checkout/OrderSummary.tsx] | props: { order: DemoOrder } (only when order is available)
+  Controller (react-hook-form; name, control, render; one per customer field)
+    Field [src/shared/ui/shadcn/Field.tsx] | props: ComponentProps<'div'> & VariantProps<typeof fieldVariants>
+      FieldLabel [src/shared/ui/shadcn/FieldLabel.tsx] | props: ComponentProps<typeof Label>
+        Label [src/shared/ui/shadcn/Label.tsx] | props: ComponentProps<typeof Root>
+          LabelPrimitive.Root (Radix Root; forwarded Label props)
+      input / textarea (native HTML)
+      FieldError [src/shared/ui/shadcn/FieldError.tsx] | props: ComponentProps<'div'> & { errors?: Array<{ message?: string } | undefined> } (only when invalid)
+
+Confirmation branch (CheckoutPage):
+DemoOrderConfirmation [src/features/checkout/DemoOrderConfirmation.tsx] | props: { order: DemoOrder; onContinue: () => void }
+  OrderSummary (order)
+```
+
+The shadcn/ui inherited types above match their interfaces. Field inherits native div props and
+fieldVariants orientation variants (vertical, horizontal, responsive). FieldError inherits native div props
+plus its optional errors array. FieldLabel inherits Label props; Label inherits Radix Root props.
+Children, className, HTML attributes and refs remain inherited rather than replaced by a simplified interface.
+Benefits and the ribbon are markup inside HeroSection, rather than separate components.
+The shared layout stays mounted while the selected page changes; the quick bag mounts only when opened.
 
 ## Routes and shared layout
 
@@ -196,18 +259,34 @@ Clearing the bag also clears its promo code.
 
 ## Local state and derived values
 
-State stays near the components that need to change it.
-SiteHeader owns whether its menu or search is open; AboutSection owns its expanded story.
-NewsletterForm and CheckoutForm own their temporary form values.
-The bag UI hook owns quick-dialog visibility and add feedback, while persistent cart data stays shared.
-These choices keep unrelated UI details out of the shared store.
+State belongs to the component that calls its hook. Context and Outlet share existing owners' values;
+consuming useStorefront does not create another store.
 
-Home and Shop have different browsing needs, so their catalog filters are separate.
-HomeCatalogProvider retains the Home featured/category choices across navigation.
-RootLayout owns the Shop filters, which are also used by header search.
-Neither filter owner stores another copy of the cart.
+| Owner                                            | State and responsibility                                                                                                                                     |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| StorefrontProvider                               | Keeps one stable adapter wrapping the Day 3 store for catalog/API status, cart, promo, theme and profile. The provider owns shared catalog request lifetime. |
+| HomeCatalogProvider through useCatalogNavigation | Home category, query, sort and featured filters, retained across navigation.                                                                                 |
+| RootLayout through useCatalogNavigation(false)   | Shop filters, also used by header search. Outlet context exposes this catalog controller and the bag controller to pages.                                    |
+| RootLayout through useShoppingBag                | activeDialog and bagFeedback. Cart contents remain shared.                                                                                                   |
+| RootLayout through useNotification               | Notification message and revision, including timed dismissal and copy-code feedback.                                                                         |
+| SiteHeader                                       | menuOpen and searchOpen.                                                                                                                                     |
+| AboutSection                                     | expanded story visibility.                                                                                                                                   |
+| NewsletterForm                                   | Temporary email and submitted feedback; submission clears the email.                                                                                         |
+| CatalogControls                                  | Which search/category/sort popup is open. Filter values come through props.                                                                                  |
+| PromoForm                                        | Draft code value and feedback/error. The applied code remains shared.                                                                                        |
+| ProductImage                                     | failedImage, loadedSecondary and failedSecondary image status.                                                                                               |
+| HeroArtwork through useHeroEntrance              | Loaded asset IDs, failure, reduced-motion preference and entrance phase. active is derived.                                                                  |
+| ProductDetailsPage through useProductDetails     | Request result and retry attempt. Display state is derived from those and the route ID; obsolete requests are aborted.                                       |
+| CheckoutForm through React Hook Form             | Temporary customer values, validation errors and submission state. Customer details are not stored or sent.                                                  |
+| CheckoutPage                                     | confirmed demo order in page memory, without customer details.                                                                                               |
+| LazyPage                                         | Current lazy page component; retry creates a fresh lazy instance.                                                                                            |
+| ErrorBoundary                                    | failed render flag, reset by its Try Again action.                                                                                                           |
 
-Counts, visible products, discounts and totals are calculated from current inputs.
+App assembles routes and does not own cart or product state. useTheme applies the shared theme to the document;
+it does not own another theme value. Other components receive props or consume these existing owners.
+Refs for focus, dialogs, animation and observers are implementation handles rather than duplicate business state.
+
+Counts, visible products, discounts, checkout eligibility and totals are calculated from current inputs.
 For example, the bag count comes from item quantities and filtered products come from the catalog plus filters.
 Storing these results again would require extra updates and could let them become out of sync.
 Existing product-selection and cart-total logic is reused instead of duplicated.
