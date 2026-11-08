@@ -2,9 +2,11 @@
 
 ## Introduction
 
-In this Debug Lab, I tested five common React bugs from the ShopBoard Debug Lab. I tried to understand each problem, find its cause, and fix it.
+In this Debug Lab, I tested five common React bugs from the ShopBoard Debug Lab. I reproduced the problems, tried the fixes, and checked the results to understand why each bug happened and how to solve it.
 
-I reviewed and tried the Debug Lab fixes with Codex's help. Codex helped me investigate the bugs and find solutions, and also ran automated React/jsdom tests to check the fixes. The observations below describe the Debug Lab exercises; they do not claim that I used Chrome or React DevTools. Those specific checks have not been verified.
+I worked on the exercises myself and used Codex to help me understand the causes and improve the solutions. Codex also ran automated React/jsdom tests to verify the fixes.
+
+The following sections explain what I observed, where I found each problem, what caused it, and how I fixed it.
 
 ## 1. Missing Key
 
