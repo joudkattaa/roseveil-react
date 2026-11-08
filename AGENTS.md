@@ -4,7 +4,7 @@
 
 - Work in this React repository only. My original `Desktop/shopboard` project is read-only.
 - Follow my latest explicit instruction. This file does not give permission to add new features, install packages, change Git history, or deploy.
-- Read `README.md` for the component tree, Props contracts, state ownership, setup, and testing instructions.
+- Read `README.md` for the component tree, state ownership, setup, and testing instructions. Read the component source files for exact Props interfaces.
 - Read `VISION.md` to understand my original design ideas.
 - Keep the original ROSEVEIL branding, images, layout, responsive behavior, and light/burgundy themes. I want to improve my original design, not replace it.
 - Keep `AGENTS.md` as the only project rules file for Codex.
@@ -125,7 +125,7 @@ npm.cmd test
 - Update tests for changed behavior and imports.
 - Keep tests focused on real behavior, immutable snapshots, subscriptions, persistence, and cleanup where relevant.
 - Report actual results. React and jsdom tests do not prove native browser focus, clipboard permissions, visual parity, or screen-reader behavior. Keep browser checks separate.
-- Keep README component paths, exact Props contracts, and state ownership aligned with the source.
+- Keep README component paths and state ownership aligned with the source. Keep exact Props interfaces documented in the component source files.
 - Keep all five official Debug Lab bugs in `debug-lab-log.md` with observations, component, investigation, cause, fix, and verification.
 - **Preserve honest AI attribution.** Explain which Debug Lab steps I tested myself and where Codex helped me find solutions. Only report browser or React DevTools checks that were actually performed.
 - `answers.md` must be written personally by me. Do not generate it or invent personal experiments.
